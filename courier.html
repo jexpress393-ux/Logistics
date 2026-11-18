@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JET Shipping & Logistics - بوابة المناديب وخط السير</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root { --brand-primary: #c8102e; --brand-hover: #9e0b22; --brand-light: #fef2f2; --sidebar-bg: #0f172a; }
+        html, body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f1f5f9;
+            min-height: 100dvh;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior-y: auto;
+            -webkit-overflow-scrolling: touch;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        @media (min-width: 1024px) {
+            body { height: 100vh; overflow: hidden; }
+        }
+        .bg-brand { background-color: var(--brand-primary) !important; }
+        .hover-bg-brand:hover { background-color: var(--brand-hover) !important; }
+        .text-brand { color: var(--brand-primary) !important; }
+        .border-brand { border-color: var(--brand-primary) !important; }
+        .sidebar-custom { background-color: var(--sidebar-bg) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .courier-grad { background: linear-gradient(135deg, #0f172a 0%, #1e293b 52%, var(--brand-primary) 100%); }
+
+        #jet-cloud-preloader {
+            position: fixed; inset: 0; z-index: 99999;
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+        }
+        #jet-cloud-preloader.loaded { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-ring {
+            width: 88px; height: 88px; border-radius: 50%;
+            border: 3px solid rgba(200, 16, 46, 0.18);
+            border-top-color: var(--brand-primary); border-right-color: #06b6d4;
+            animation: jetSpin 0.9s linear infinite;
+        }
+        @keyframes jetSpin { to { transform: rotate(360deg); } }
+
+        @media (min-width: 1024px) {
+            aside.sidebar-full { width: 17.2rem; }
+            aside.sidebar-mini { width: 4.6rem; }
+            aside.sidebar-mini .nav-label, aside.sidebar-mini .brand-text, aside.sidebar-mini .sidebar-footer-details, aside.sidebar-mini .badge-count, aside.sidebar-mini .section-title { display: none !important; }
+            aside.sidebar-mini .nav-btn { justify-content: center; padding-left: 0; padding-right: 0; }
+            aside.sidebar-closed { width: 0 !important; overflow: hidden; border: none !important; }
+        }
+        @media (max-width: 1023px) {
+            #main-sidebar { position: fixed; top: 0; right: 0; bottom: 0; width: 17.2rem !important; z-index: 60; transform: translateX(100%); }
+            #main-sidebar.mobile-open { transform: translateX(0); }
+        }
+
+        .tab-pane { display: none; animation: fadeIn 0.18s ease-in-out; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-backdrop { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .modal-card { max-height: 90vh; display: flex; flex-direction: column; margin: auto; }
+        .modal-body-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; }
+        .table-responsive-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 99px; }
+
+        #print-mount-root { display: none; }
+        @media print {
+            @page { size: A4; margin: 10mm; }
+            html, body { height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; }
+            header, #main-sidebar, main, nav, #modals-container, #mobile-sidebar-backdrop, #jet-cloud-preloader, #jet-sync-badge, .modal-backdrop, .no-print { display: none !important; }
+            #print-mount-root { display: block !important; position: static !important; width: 100% !important; background: white !important; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col">
+
+    <!-- شاشة التحميل السحابية -->
+    <div id="jet-cloud-preloader">
+        <div class="relative flex items-center justify-center mb-5">
+            <div class="loader-ring"></div>
+            <div class="absolute w-14 h-14 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-xl overflow-hidden jet-logo-slot"></div>
+        </div>
+        <h2 id="preloader-brand-name" class="text-2xl font-black text-white">JET</h2>
+        <p class="text-xs font-bold text-cyan-400 mt-1">تطبيق المناديب وخط السير اليومي</p>
+        <div class="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden mt-5 border border-slate-700">
+            <div id="jet-loader-bar" class="h-full bg-gradient-to-l from-red-500 to-cyan-400 transition-all duration-300" style="width: 30%"></div>
+        </div>
+        <p class="text-[11px] font-bold text-slate-300 mt-3">جاري سحب شحنات خط سيرك وعهدتك من السحابة...</p>
+    </div>
+
+    <!-- مؤشر المزامنة السحابية -->
+    <div id="jet-sync-badge" class="no-print fixed bottom-16 lg:bottom-4 left-4 z-40 bg-slate-900 text-white px-3.5 py-2 rounded-xl text-[11px] font-extrabold flex items-center gap-2 shadow-xl border border-white/10">
+        <span id="jet-sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span id="jet-sync-text">متصل بسحابة JET ✓</span>
+    </div>
+
+    <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-900/60 z-50 hidden lg:hidden"></div>
+
+    <!-- ================= 1. الهيدر العلوي للمندوب ================= -->
+    <header class="sticky top-0 lg:static bg-white border-b border-slate-200 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 flex-shrink-0 z-30 shadow-sm">
+        <div class="flex items-center gap-2">
+            <button onclick="toggleMobileSidebar(true)" class="lg:hidden px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-bars"></i><span>القائمة</span>
+            </button>
+            <div class="hidden lg:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button onclick="setSidebarMode('full')" title="فتح القائمة" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white shadow-sm text-slate-900 transition"><i class="fa-solid fa-bars-staggered"></i></button>
+                <button onclick="setSidebarMode('mini')" title="تصغير للأيقونات" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-900 transition"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <button onclick="setSidebarMode('closed')" title="إغلاق القائمة" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div onclick="switchTab('tab-profile', document.getElementById('nav-btn-profile'))" class="cursor-pointer flex items-center gap-2 bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-xl text-xs">
+                <div class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <i id="header-avatar-icon" class="fa-solid fa-motorcycle text-[10px]"></i>
+                    <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Courier">
+                </div>
+                <span id="header-courier-name" class="font-black text-slate-900 max-w-[110px] sm:max-w-none truncate">المندوب</span>
+                <span id="header-courier-zone" class="hidden sm:inline px-2 py-0.5 bg-slate-900 text-amber-400 rounded-md font-bold text-[10px]">خط السير</span>
+            </div>
+
+            <button onclick="pullCourierDataFromSheets(true)" title="تحديث الشحنات الآن" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-black flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-rotate"></i><span class="hidden sm:inline">تحديث</span>
+            </button>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="openCameraScannerModal()" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl text-xs font-black shadow flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-qrcode"></i><span>مسح بوليصة</span>
+            </button>
+            <button onclick="notifyBranchHandover()" class="hidden sm:flex px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold items-center gap-1.5 transition">
+                <i class="fa-solid fa-hand-holding-dollar"></i><span>توريد العهدة</span>
+            </button>
+            <a href="index.html" onclick="localStorage.removeItem('swift_active_session')" title="تسجيل الخروج" class="px-2.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold flex items-center gap-1 transition">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- ================= 2. منطقة العمل الرئيسية ================= -->
+    <div class="flex flex-1 lg:overflow-hidden relative">
+
+        <!-- القائمة الجانبية -->
+        <aside id="main-sidebar" class="sidebar-custom sidebar-full text-slate-300 flex flex-col justify-between flex-shrink-0 lg:h-full select-none shadow-2xl">
+            <div class="overflow-y-auto">
+                <div class="p-4 flex items-center justify-between gap-2 border-b border-white/10">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center p-1 flex-shrink-0 overflow-hidden shadow-lg border border-red-500/40 jet-logo-slot"></div>
+                        <div class="brand-text overflow-hidden">
+                            <div class="brand-name-span font-black text-white text-base truncate">JET</div>
+                            <div class="text-[11px] text-cyan-400 font-bold flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>بوابة المناديب الميدانية
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="toggleMobileSidebar(false)" class="lg:hidden w-8 h-8 rounded-lg bg-white/10 text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <nav class="p-3 space-y-1.5 text-xs font-bold">
+                    <div class="section-title text-[10px] font-extrabold text-slate-500 px-3 py-1 uppercase">المهام والتوصيل</div>
+
+                    <button onclick="switchTab('tab-overview', this)" id="nav-btn-overview" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-brand text-white transition">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-route text-sm w-5 text-center"></i><span class="nav-label">خط السير النشط اليوم</span></div>
+                        <span id="badge-active-route" class="badge-count px-2 py-0.5 text-[10px] rounded-full bg-white/20 text-white">0</span>
+                    </button>
+
+                    <button onclick="switchTab('tab-orders', this)" id="nav-btn-orders" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/10 transition">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-boxes-stacked text-sm w-5 text-center text-amber-400"></i><span class="nav-label">سجل جميع شحناتي</span></div>
+                        <span id="badge-all-orders" class="badge-count px-2 py-0.5 text-[10px] rounded-full bg-white/15 text-white">0</span>
+                    </button>
+
+                    <button onclick="switchTab('tab-custody', this)" id="nav-btn-custody" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/10 transition">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-sack-dollar text-sm w-5 text-center text-emerald-400"></i><span class="nav-label">عهدتي وعمولتي والتقفيل</span></div>
+                        <span id="badge-custody-count" class="badge-count px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/20 text-emerald-300">0</span>
+                    </button>
+
+                    <div class="section-title text-[10px] font-extrabold text-slate-500 px-3 pt-3 pb-1 uppercase">حسابي والدعم</div>
+
+                    <button onclick="switchTab('tab-profile', this)" id="nav-btn-profile" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/10 transition">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-id-badge text-sm w-5 text-center text-cyan-400"></i><span class="nav-label">ملفي ومعدل أدائي</span></div>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-3.5 border-t border-white/10 text-[11px] text-slate-300 sidebar-footer-details bg-black/25 space-y-1.5">
+                <div class="flex justify-between items-center">
+                    <span>كود المندوب:</span>
+                    <span id="sidebar-cr-id" class="font-mono text-amber-400 font-black">#CR-01</span>
+                </div>
+                <div class="flex justify-between items-center text-[10px]">
+                    <span>عمولتك الأساسية:</span>
+                    <span id="sidebar-cr-comm" class="text-emerald-400 font-bold">20 ج.م / أوردر</span>
+                </div>
+                <button onclick="contactBranchSupport()" class="w-full mt-1 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-bold text-[11px] flex items-center justify-center gap-1.5 transition">
+                    <i class="fa-brands fa-whatsapp"></i><span>تواصل مع مشرف الفرع</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ================= 3. منطقة المحتوى ================= -->
+        <main class="flex-1 lg:h-full lg:overflow-y-auto p-3 sm:p-5 md:p-6 pb-24 lg:pb-6 space-y-5">
+
+            <!-- ================= الصفحة 1: خط السير النشط اليوم (كروت ميدانية للموبايل) ================= -->
+            <div id="tab-overview" class="tab-pane active space-y-5">
+
+                <!-- بانر المندوب -->
+                <div class="courier-grad text-white p-5 rounded-3xl shadow-xl flex flex-wrap items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-0.5 rounded-full bg-white/20 text-white font-black text-[11px]">مندوب توصيل — <span class="brand-name-span">JET</span></span>
+                            <span id="hero-cr-id" class="font-mono text-xs text-amber-300 font-bold">#CR-01</span>
+                        </div>
+                        <h1 class="text-lg sm:text-2xl font-black mt-1">بالتوفيق في خط سيرك، <span id="hero-cr-name">المندوب</span> 🏍️</h1>
+                        <p class="text-xs text-slate-200">منطقة التوزيع: <strong id="hero-cr-zone" class="text-amber-300">القاهرة</strong> — حدّث حالة كل شحنة فور التسليم لتُحسب عمولتك وتظهر للإدارة لحظياً</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button onclick="openCameraScannerModal()" class="flex-1 sm:flex-initial justify-center px-5 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-2xl text-xs shadow-lg flex items-center gap-2 transition">
+                            <i class="fa-solid fa-camera text-sm"></i><span>مسح باركود البوليصة</span>
+                        </button>
+                        <button onclick="switchTab('tab-custody', document.getElementById('nav-btn-custody'))" class="flex-1 sm:flex-initial justify-center px-5 py-3 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-2xl text-xs shadow-lg flex items-center gap-2 transition">
+                            <i class="fa-solid fa-vault text-emerald-600 text-sm"></i><span>تقفيل العهدة</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- بطاقات الأرقام والعهدة الحالية -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-blue-200 shadow-sm">
+                        <span class="text-[11px] font-extrabold text-blue-700 block">الكاش المُحصّل في عهدتك</span>
+                        <h3 id="kpi-cash-hand" class="text-xl sm:text-2xl font-black text-slate-900 mt-1">0 ج.م</h3>
+                        <span class="text-[10px] text-slate-400 font-bold mt-1.5 block">قبل خصم عمولتك</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border-2 border-emerald-500 shadow-sm">
+                        <span class="text-[11px] font-extrabold text-emerald-700 block">عمولتك المستحقة الآن</span>
+                        <h3 id="kpi-my-comm" class="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0 ج.م</h3>
+                        <span class="text-[10px] text-emerald-700 font-bold mt-1.5 block">عن أوردرات العهدة الجارية</span>
+                    </div>
+
+                    <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-sm">
+                        <span class="text-[11px] font-extrabold text-amber-400 block">صافي المطلوب توريده للفرع</span>
+                        <h3 id="kpi-net-branch" class="text-xl sm:text-2xl font-black text-white mt-1">0 ج.م</h3>
+                        <span class="text-[10px] text-slate-300 font-bold mt-1.5 block">الكاش - عمولتك</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-rose-200 shadow-sm">
+                        <span class="text-[11px] font-extrabold text-rose-700 block">طرود مرتجعات بيدك للفرع</span>
+                        <h3 id="kpi-returns-hand" class="text-xl sm:text-2xl font-black text-rose-600 mt-1">0 طرد</h3>
+                        <span class="text-[10px] text-amber-700 font-bold mt-1.5 block">جاري توصيلها الآن: <strong id="kpi-active-count">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- شريط البحث السريع داخل خط السير النشط -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="font-black text-sm sm:text-base text-slate-900"><i class="fa-solid fa-motorcycle text-brand ml-1"></i> شحنات خط سيرك النشطة المطلوب تسليمها (<span id="route-cards-count">0</span>)</h2>
+                        <p class="text-[11px] text-slate-500">اضغط على أي حالة أسفل الشحنة لتحديثها وحفظها في شيت الشركة فوراً</p>
+                    </div>
+                    <input id="route-search" oninput="renderActiveRouteCards()" type="text" placeholder="بحث باسم العميل، الهاتف، البوليصة، المنطقة..." class="w-full sm:w-64 px-3.5 py-2 text-xs border rounded-xl outline-none focus:border-red-500 font-bold">
+                </div>
+
+                <!-- شبكة كروت الشحنات النشطة (مصممة خصيصاً لاستخدام اليد الواحدة على الموبايل) -->
+                <div id="active-route-cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-xs"></div>
+            </div>
+
+            <!-- ================= الصفحة 2: سجل جميع شحناتي ================= -->
+            <div id="tab-orders" class="tab-pane space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h2 class="font-extrabold text-base text-slate-900"><i class="fa-solid fa-boxes-stacked text-amber-500 ml-1"></i> جميع الشحنات المُسندة إليك (<span id="all-orders-count">0</span> شحنة)</h2>
+                            <p class="text-xs text-slate-500">يشمل الشحنات النشطة، المسلمة، المرتجعة، والمقفلة مع الفرع</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <input id="filter-orders-search" oninput="renderAllOrdersTable()" type="text" placeholder="بحث بالبوليصة، العميل، التاجر..." class="flex-1 sm:w-52 px-3 py-1.5 text-xs border rounded-xl outline-none">
+                            <select id="filter-orders-status" onchange="renderAllOrdersTable()" class="px-3 py-1.5 text-xs border rounded-xl bg-slate-50 font-bold">
+                                <option value="ALL">كل الحالات</option>
+                                <option value="ACTIVE">جاري التوصيل / مؤجل</option>
+                                <option value="DELIVERED">تم التسليم (كلي وجزئي)</option>
+                                <option value="RETURNED">المرتجعات</option>
+                                <option value="SETTLED">تم تقفيلها بالفرع ✓</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive-scroll">
+                        <table class="w-full text-right text-xs whitespace-nowrap">
+                            <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">البوليصة</th>
+                                    <th class="p-3">التاجر</th>
+                                    <th class="p-3">المستلم والهاتف</th>
+                                    <th class="p-3">المحافظة</th>
+                                    <th class="p-3">المنتج</th>
+                                    <th class="p-3">المطلوب (COD)</th>
+                                    <th class="p-3">المدفوع</th>
+                                    <th class="p-3">عمولتك</th>
+                                    <th class="p-3">الحالة</th>
+                                    <th class="p-3">تقفيل الفرع</th>
+                                    <th class="p-3 text-center">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-orders-tbody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= الصفحة 3: العهدة والتقفيل مع الفرع (PDF) ================= -->
+            <div id="tab-custody" class="tab-pane space-y-5">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900"><i class="fa-solid fa-sack-dollar text-emerald-600 ml-1"></i> كشف العهدة الجارية وتقفيل الحساب مع الفرع</h2>
+                        <p class="text-xs text-slate-500 mt-1">يعرض كل شحنة لم يتم استلام عهدتها بالفرع بعد، مع حساب عمولتك وصافي الكاش والمرتجعات بدقة</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="notifyBranchHandover()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> إرسال ملخص العهدة للمشرف
+                        </button>
+                        <button onclick="printElement('custody-printable-sheet')" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-print text-amber-400"></i> طباعة كشف التوريد PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div id="custody-printable-sheet" class="bg-white border-2 border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4 text-xs shadow-sm">
+                    <div class="flex flex-wrap justify-between items-center border-b-2 border-slate-800 pb-3 gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 jet-logo-slot"></div>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900"><span class="brand-name-span">JET</span> — كشف توريد عهدة مندوب</h3>
+                                <p id="cust-courier-info" class="text-xs font-bold text-brand mt-0.5"></p>
+                            </div>
+                        </div>
+                        <div class="text-left font-bold">التاريخ: <span id="cust-date"></span></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center bg-slate-50 p-3.5 rounded-xl border">
+                        <div><span class="text-[10px] text-slate-400 block">إجمالي الكاش المُحصّل</span><strong id="cust-cash" class="text-sm font-black text-blue-700">0 ج.م</strong></div>
+                        <div><span class="text-[10px] text-slate-400 block">عمولتك المخصومة لك</span><strong id="cust-comm" class="text-sm font-black text-emerald-600">0 ج.م</strong></div>
+                        <div><span class="text-[10px] text-slate-400 block">مرتجعات للتسليم للمخزن</span><strong id="cust-returns" class="text-sm font-black text-rose-600">0 طرد</strong></div>
+                        <div class="bg-slate-900 text-white rounded-lg p-1.5"><span class="text-[10px] text-amber-300 block">صافي المطلوب توريده للفرع</span><strong id="cust-net" class="text-base font-black text-amber-400">0 ج.م</strong></div>
+                    </div>
+
+                    <div class="table-responsive-scroll">
+                        <table class="w-full text-right text-xs border whitespace-nowrap">
+                            <thead class="bg-slate-900 text-white font-bold">
+                                <tr><th class="p-2">البوليصة</th><th class="p-2">التاجر</th><th class="p-2">المستلم</th><th class="p-2">الحالة</th><th class="p-2">المُحصّل</th><th class="p-2">عمولتك</th><th class="p-2">صافي للفرع</th><th class="p-2">آخر تحديث</th></tr>
+                            </thead>
+                            <tbody id="custody-orders-tbody" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= الصفحة 4: الملف الشخصي ومعدل الأداء ================= -->
+            <div id="tab-profile" class="tab-pane space-y-5">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center space-y-3">
+                        <div class="relative mt-2">
+                            <div class="w-28 h-28 rounded-3xl bg-cyan-50 border-4 border-cyan-200 flex items-center justify-center overflow-hidden text-cyan-700 text-4xl">
+                                <i id="profile-big-icon" class="fa-solid fa-motorcycle"></i>
+                                <img id="profile-big-img" src="" class="w-full h-full object-cover hidden" alt="Courier">
+                            </div>
+                            <label for="cr-avatar-input" class="absolute -bottom-2 -right-2 w-9 h-9 rounded-xl bg-brand text-white shadow-lg flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-camera text-xs"></i>
+                            </label>
+                            <input id="cr-avatar-input" type="file" accept="image/*" onchange="handleCourierAvatarUpload(event)" class="hidden">
+                        </div>
+                        <div>
+                            <h3 id="prof-cr-name" class="text-lg font-black text-slate-900">المندوب</h3>
+                            <p id="prof-cr-zone" class="text-xs font-bold text-cyan-700">خط السير</p>
+                            <span id="prof-cr-comm-badge" class="mt-2 inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-xl font-black text-xs">عمولة التوصيل: 20 ج.م</span>
+                        </div>
+                        <div class="w-full pt-3 border-t text-right space-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-slate-400 font-bold">كود المندوب:</span><strong id="prof-cr-id" class="font-mono text-brand"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-400 font-bold">رقم الموبايل:</span><strong id="prof-cr-phone" class="font-mono"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-400 font-bold">اسم المستخدم:</span><strong id="prof-cr-user" class="font-mono"></strong></div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-black text-sm text-slate-900 border-b pb-2.5"><i class="fa-solid fa-trophy text-amber-500 ml-1"></i> ملخص أدائك التاريخي في شركة <span class="brand-name-span">JET</span></h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                                    <span class="text-[11px] font-bold text-emerald-800 block">نسبة نجاح التسليم</span>
+                                    <strong id="perf-success-rate" class="text-2xl font-black text-emerald-600 mt-1 block">100%</strong>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200">
+                                    <span class="text-[11px] font-bold text-blue-800 block">إجمالي الشحنات المسلمة</span>
+                                    <strong id="perf-total-delivered" class="text-2xl font-black text-blue-700 mt-1 block">0</strong>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                                    <span class="text-[11px] font-bold text-amber-800 block">إجمالي عمولاتك المسجلة</span>
+                                    <strong id="perf-total-comm" class="text-2xl font-black text-amber-700 mt-1 block">0 ج.م</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <div>
+                                <h4 class="font-black text-amber-400 text-sm"><i class="fa-solid fa-headset ml-1"></i> غرفة عمليات ومشرف فرع <span class="brand-name-span">JET</span></h4>
+                                <p class="text-slate-300 mt-0.5">في حال وجود مشكلة بعنوان عميل أو طارئ على الطريق تواصل فوراً مع المشرف</p>
+                            </div>
+                            <button onclick="contactBranchSupport()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black flex items-center gap-2 shadow">
+                                <i class="fa-brands fa-whatsapp text-base"></i><span>مراسلة المشرف</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- شريط التنقل السفلي للموبايل -->
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 px-2 py-1.5 flex items-center justify-around z-40 shadow-2xl text-[10px] font-extrabold text-slate-600">
+        <button id="mob-nav-overview" onclick="switchTab('tab-overview', document.getElementById('nav-btn-overview'))" class="mob-nav-btn flex flex-col items-center gap-1 py-1 px-2 text-brand"><i class="fa-solid fa-route text-base"></i><span>خط السير</span></button>
+        <button id="mob-nav-orders" onclick="switchTab('tab-orders', document.getElementById('nav-btn-orders'))" class="mob-nav-btn flex flex-col items-center gap-1 py-1 px-2"><i class="fa-solid fa-boxes-stacked text-base text-amber-500"></i><span>شحناتي</span></button>
+        <button onclick="openCameraScannerModal()" class="flex flex-col items-center justify-center -mt-5 w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 shadow-lg border-2 border-white"><i class="fa-solid fa-qrcode text-lg"></i></button>
+        <button id="mob-nav-custody" onclick="switchTab('tab-custody', document.getElementById('nav-btn-custody'))" class="mob-nav-btn flex flex-col items-center gap-1 py-1 px-2"><i class="fa-solid fa-sack-dollar text-base text-emerald-600"></i><span>العهدة</span></button>
+        <button id="mob-nav-profile" onclick="switchTab('tab-profile', document.getElementById('nav-btn-profile'))" class="mob-nav-btn flex flex-col items-center gap-1 py-1 px-2"><i class="fa-solid fa-id-badge text-base text-cyan-600"></i><span>ملفي</span></button>
+    </nav>
+
+    <!-- ================= النوافذ المنبثقة ================= -->
+    <div id="modals-container">
+        <!-- 1. نافذة تحديث حالة شحنة (تفصيلية مع المبلغ المحصل والملاحظة) -->
+        <div id="modal-update-order" onclick="handleBackdropClick(event, 'modal-update-order')" class="modal-backdrop fixed inset-0 bg-slate-900/75 hidden items-center justify-center p-3 sm:p-4 z-50">
+            <div class="modal-card bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden text-xs">
+                <div class="p-4 border-b bg-slate-900 text-white flex justify-between items-center">
+                    <h3 class="font-black text-sm"><i class="fa-solid fa-clipboard-check text-amber-400 ml-1"></i> تحديث حالة الشحنة <span id="upd-awb-title" class="text-amber-400 font-mono"></span></h3>
+                    <button onclick="closeModal('modal-update-order')" class="w-8 h-8 rounded-xl bg-white/10 text-white font-bold">✕</button>
+                </div>
+                <input type="hidden" id="upd-awb-hidden" value="">
+                <div class="modal-body-scroll p-5 space-y-4">
+                    <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                        <div class="flex justify-between"><span class="text-slate-400 font-bold">العميل:</span><strong id="upd-recipient" class="text-slate-900"></strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400 font-bold">المطلوب تحصيله (COD):</span><strong id="upd-cod-total" class="text-brand font-black">0 ج.م</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400 font-bold">سعر الشحن:</span><strong id="upd-ship-fee" class="text-amber-700 font-black">0 ج.م</strong></div>
+                    </div>
+
+                    <div>
+                        <label class="font-extrabold text-slate-700 block mb-1.5">اختر الحالة الجديدة *</label>
+                        <select id="upd-status-select" onchange="onCourierStatusSelectChange()" class="w-full p-3 border-2 border-slate-200 focus:border-red-600 rounded-xl bg-white font-black text-slate-900 outline-none">
+                            <option value="تم التسليم">✅ تم التسليم بالكامل</option>
+                            <option value="تم التسليم جزئي">🟡 تم التسليم جزئي</option>
+                            <option value="مؤجل">⏰ مؤجل (لا يرد / طلب التأجيل)</option>
+                            <option value="مرتجع وتم دفع الشحن">↩️ مرتجع وتم دفع الشحن</option>
+                            <option value="مرتجع ولم يدفع الشحن">❌ مرتجع ولم يدفع الشحن</option>
+                            <option value="تم الشحن مع المندوب">🏍️ لا يزال معي (جاري التوصيل)</option>
+                        </select>
+                    </div>
+
+                    <div id="upd-paid-wrapper" class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1">
+                        <label class="font-extrabold text-emerald-900 block">المبلغ المُحصّل فعلياً من العميل (ج.م) *</label>
+                        <input id="upd-paid-input" type="number" class="w-full p-2.5 border border-emerald-300 rounded-xl font-black text-base text-center text-emerald-800 bg-white">
+                    </div>
+
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">ملاحظة المندوب / سبب التأجيل أو المرتجع:</label>
+                        <textarea id="upd-note-input" rows="2" placeholder="اكتب أي ملاحظة للإدارة والتاجر (مثال: العميل مغلق / طلب التسليم غداً)..." class="w-full p-3 border rounded-xl bg-slate-50 font-bold outline-none focus:bg-white"></textarea>
+                    </div>
+                </div>
+                <div class="p-4 border-t bg-slate-50 flex justify-end gap-2">
+                    <button onclick="closeModal('modal-update-order')" class="px-4 py-2.5 bg-slate-200 rounded-xl font-bold">إلغاء</button>
+                    <button id="btn-confirm-status" onclick="confirmCourierOrderUpdate()" class="px-6 py-2.5 bg-brand hover-bg-brand text-white rounded-xl font-black shadow">حفظ وتحديث الحالة الآن</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ماسح الكاميرا السريع للمندوب -->
+        <div id="modal-camera-scanner" onclick="handleBackdropClick(event, 'modal-camera-scanner')" class="modal-backdrop fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-3 sm:p-4 z-50">
+            <div class="modal-card bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden text-xs">
+                <div class="p-4 border-b bg-slate-900 text-white flex justify-between items-center">
+                    <h3 class="font-black text-sm"><i class="fa-solid fa-qrcode text-amber-400 ml-1"></i> مسح باركود البوليصة</h3>
+                    <button onclick="closeCameraScannerModal()" class="px-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs">إغلاق ✕</button>
+                </div>
+                <div class="modal-body-scroll p-4 space-y-4">
+                    <div class="bg-slate-950 rounded-2xl p-3 text-center border-2 border-amber-400">
+                        <div id="qr-reader-mount" class="w-full rounded-xl overflow-hidden bg-black min-h-[190px] flex items-center justify-center text-slate-400 font-bold">اضغط على "تشغيل الكاميرا" لمسح بوليصة العميل</div>
+                        <button onclick="startRealCamera()" class="mt-3 px-5 py-2.5 bg-brand text-white rounded-xl font-black shadow inline-flex items-center gap-2"><i class="fa-solid fa-camera"></i> تشغيل الكاميرا الآن</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="cam-manual-awb" type="text" onkeydown="if(event.key==='Enter') lookupScannedAwb()" placeholder="أو اكتب رقم البوليصة يدوياً..." class="flex-1 p-2.5 border rounded-xl font-bold outline-none">
+                        <button onclick="lookupScannedAwb()" class="px-4 py-2 bg-slate-900 text-amber-400 rounded-xl font-black">فتح</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. تفاصيل المنتج والملاحظات -->
+        <div id="modal-item-details" onclick="handleBackdropClick(event, 'modal-item-details')" class="modal-backdrop fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-3 z-50">
+            <div class="modal-card bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden text-xs">
+                <div class="p-4 border-b bg-slate-50 flex justify-between items-center"><h3 class="font-black text-sm"><i class="fa-solid fa-box-open text-orange-500 ml-1"></i> تفاصيل الشحنة والمحتوى</h3><button onclick="closeModal('modal-item-details')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 font-bold">✕</button></div>
+                <div id="item-details-body" class="modal-body-scroll p-4 space-y-3"></div>
+                <div class="p-4 border-t bg-slate-50 flex justify-end"><button onclick="closeModal('modal-item-details')" class="px-5 py-2 bg-slate-200 rounded-xl font-bold">إغلاق</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="print-mount-root"></div>
+
+    <!-- ================= المحرك البرمجي لبوابة مناديب JET ================= -->
+    <script>
+        const JET_CLOUD_URLS = {
+            CORE_DB: "https://script.google.com/macros/s/AKfycbwMkR3CxKnBge9Gxd80yyv-7wRlTjlbbLj5xKTLUr5GFY14SzI31vRcmD5r_mIEQ-dlww/exec",
+            OPS_DB:  "https://script.google.com/macros/s/AKfycbzX5ZNPOtNWCxvdG83hvPBTRKWudybWLCFLozv7_mMr6Qinc26Ife3XU293qitKVyb8/exec",
+            FIN_DB:  "https://script.google.com/macros/s/AKfycbzfXkrG5LJlMlCDtDPu4DDlSHyXMnQTksLYZA7Mq78Hu-XHBIJk3MAst2pdRf0jUhkNbg/exec"
+        };
+
+        const companyProfile = JSON.parse(localStorage.getItem('jet_company_profile') || 'null') || {
+            name: localStorage.getItem('jet_company_name') || 'JET',
+            tagline: 'جيت للشحن والخدمات اللوجستية',
+            whatsapp: '',
+            phone: '01000000000',
+            primaryColor: '#c8102e',
+            hoverColor: '#9e0b22',
+            lightColor: '#fef2f2',
+            sidebarBg: '#0f172a',
+            logoMode: 'svg',
+            logoIcon: 'fa-truck-fast'
+        };
+
+        const EXACT_JET_SVG_LOGO = `<svg viewBox="0 0 1000 1000" class="w-full h-full object-contain" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="jetWingDarkC" x1="190" y1="405" x2="808" y2="148" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b3f46"/><stop offset="100%" stop-color="#22252a"/></linearGradient>
+                <linearGradient id="jetWingSilverC" x1="193" y1="405" x2="455" y2="475" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#94a3b8"/><stop offset="65%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#cbd5e1"/></linearGradient>
+                <linearGradient id="jetRedMainC" x1="220" y1="778" x2="808" y2="148" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d91432"/><stop offset="60%" stop-color="#c8102e"/><stop offset="100%" stop-color="#9e0b22"/></linearGradient>
+                <linearGradient id="jetRedDarkC" x1="220" y1="778" x2="808" y2="148" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#8f081d"/><stop offset="50%" stop-color="#a60c24"/><stop offset="100%" stop-color="#7a0618"/></linearGradient>
+            </defs>
+            <path d="M 808 148 L 522 302 L 560 315 L 193 405 L 455 437 L 808 148 Z" fill="url(#jetWingDarkC)"/>
+            <path d="M 193 405 L 455 437 L 415 478 Z" fill="url(#jetWingSilverC)"/>
+            <path d="M 808 148 L 455 437 L 415 478 L 393 582 L 808 148 Z" fill="#1e2026"/>
+            <path d="M 808 148 L 704 456 L 677 403 L 620 595 C 590 705, 515 778, 395 778 L 220 778 L 368 622 L 358 676 L 425 676 C 478 676, 505 640, 526 534 L 468 548 L 808 148 Z" fill="url(#jetRedDarkC)"/>
+            <path d="M 808 148 L 468 548 L 526 534 C 505 640, 478 676, 425 676 L 358 676 L 368 622 L 265 730 L 395 730 C 495 730, 555 670, 585 565 L 658 325 L 808 148 Z" fill="url(#jetRedMainC)"/>
+        </svg>`;
+
+        let currentCourier = { id: 'CR-01', name: 'مندوب تجريبي', phone: '01011112222', user: 'test_cr', zone: 'القاهرة الكبرى', comm: 20, avatar: '' };
+        let myOrders = [];
+        let html5QrScanner = null;
+
+        try {
+            const sess = JSON.parse(localStorage.getItem('swift_active_session') || 'null');
+            if (sess && (sess.role === 'COURIER' || String(sess.id || '').startsWith('CR'))) {
+                currentCourier = {
+                    id: String(sess.id || 'CR-01').trim(),
+                    name: String(sess.name || 'المندوب').trim(),
+                    phone: String(sess.phone || '01000000000').trim(),
+                    user: String(sess.user || '').trim(),
+                    zone: String(sess.zone || 'القاهرة').trim(),
+                    comm: parseFloat(sess.comm) || 20,
+                    avatar: sess.avatar || ''
+                };
+            }
+        } catch (e) {}
+
+        function applyCompanyBranding() {
+            document.documentElement.style.setProperty('--brand-primary', companyProfile.primaryColor || '#c8102e');
+            document.documentElement.style.setProperty('--brand-hover', companyProfile.hoverColor || '#9e0b22');
+            document.documentElement.style.setProperty('--brand-light', companyProfile.lightColor || '#fef2f2');
+            document.documentElement.style.setProperty('--sidebar-bg', companyProfile.sidebarBg || '#0f172a');
+
+            const bName = companyProfile.name || 'JET';
+            document.title = `${bName} - بوابة المناديب وخط السير`;
+            document.querySelectorAll('.brand-name-span').forEach(el => el.innerText = bName);
+            if (document.getElementById('preloader-brand-name')) document.getElementById('preloader-brand-name').innerText = bName;
+
+            const savedLogo = localStorage.getItem('jet_permanent_logo_base64') || '';
+            document.querySelectorAll('.jet-logo-slot').forEach(slot => {
+                if (companyProfile.logoMode === 'image' && savedLogo) slot.innerHTML = `<img src="${savedLogo}" class="w-full h-full object-contain" alt="${bName}">`;
+                else if (companyProfile.logoMode === 'icon') slot.innerHTML = `<i class="fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'} text-brand text-xl"></i>`;
+                else slot.innerHTML = EXACT_JET_SVG_LOGO;
+            });
+        }
+
+        function getCompanyWhatsAppUrl(text) {
+            const cleanWa = String(companyProfile.whatsapp || '').replace(/\D/g, '');
+            return cleanWa ? `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+        }
+
+        function contactBranchSupport() {
+            const msg = `مرحباً إدارة ${companyProfile.name || 'JET'}،\nأنا المندوب: *${currentCourier.name}* (كود #${currentCourier.id} - خط سير: ${currentCourier.zone})\nأتواصل بخصوص خط السير اليوم.`;
+            window.open(getCompanyWhatsAppUrl(msg), '_blank');
+        }
+
+        function getFormattedNow() {
+            const d = new Date();
+            return `${d.toLocaleDateString('ar-EG')} - ${d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        function isSameCourier(a, b) {
+            return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+        }
+
+        function setSyncStatus(state, msg) {
+            const dot = document.getElementById('jet-sync-dot'), txt = document.getElementById('jet-sync-text');
+            if (!dot || !txt) return;
+            if (state === 'saving') { dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping'; txt.innerText = msg || '⏳ جاري الحفظ...'; }
+            else if (state === 'error') { dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500'; txt.innerText = msg || '❌ تعذر الاتصال بالشيت'; }
+            else { dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400'; txt.innerText = msg || `✅ متصل بسحابة ${companyProfile.name} ✓`; }
+        }
+
+        function formatOrder(o) {
+            return {
+                ...o,
+                awb: String(o.awb || '').trim(),
+                source: o.source || 'يدوي',
+                merchant: String(o.merchant || '').trim(),
+                recipient: String(o.recipient || 'عميل').trim(),
+                phone: String(o.phone || ''),
+                gov: String(o.gov || '').trim(),
+                address: String(o.address || ''),
+                items: String(o.items || 'طرد شحن'),
+                notes: String(o.notes || ''),
+                prodPrice: parseFloat(o.prodPrice) || 0,
+                fee: parseFloat(o.fee) || 0,
+                packFee: parseFloat(o.packFee) || 0,
+                paid: parseFloat(o.paid) || 0,
+                courier: String(o.courier || 'بدون مندوب').trim(),
+                courierComm: parseFloat(o.courierComm) || currentCourier.comm || 20,
+                status: String(o.status || 'تم الشحن مع المندوب').trim(),
+                showShipInv: o.showShipInv !== false && o.showShipInv !== 'FALSE' && o.showShipInv !== 'false',
+                settledMerchant: o.settledMerchant === true || o.settledMerchant === 'TRUE' || o.settledMerchant === 'true',
+                settledCourier: o.settledCourier === true || o.settledCourier === 'TRUE' || o.settledCourier === 'true',
+                stockDeducted: o.stockDeducted === true || o.stockDeducted === 'TRUE' || o.stockDeducted === 'true',
+                historyLog: Array.isArray(o.historyLog) ? o.historyLog : []
+            };
+        }
+
+        function getOrderCod(o) {
+            if (o.status === 'تم الإلغاء') return 0;
+            return (parseFloat(o.prodPrice) || 0) + (parseFloat(o.fee) || 0);
+        }
+
+        function isEarnedCommStatus(st) {
+            return String(st).includes('تم التسليم') || String(st).includes('مرتجع');
+        }
+
+        // =========================================================================
+        // سحب بيانات المندوب وشحناته من شيتات JET
+        // =========================================================================
+        async function pullCourierDataFromSheets(manualRefresh = false) {
+            if (manualRefresh) setSyncStatus('saving', '⏳ جاري تحديث خط سيرك وعهدتك...');
+            const bar = document.getElementById('jet-loader-bar');
+            const safetyTimer = setTimeout(() => { document.getElementById('jet-cloud-preloader')?.classList.add('loaded'); }, 2400);
+
+            try {
+                const ts = Date.now();
+                if (bar) bar.style.width = '60%';
+                const [coreRes, opsRes] = await Promise.all([
+                    fetch(`${JET_CLOUD_URLS.CORE_DB}?t=${ts}`, { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+                    fetch(`${JET_CLOUD_URLS.OPS_DB}?t=${ts}`, { cache: 'no-store' }).then(r => r.json()).catch(() => null)
+                ]);
+
+                if (coreRes && coreRes.status === 'success' && Array.isArray(coreRes.couriers) && coreRes.couriers.length > 0) {
+                    const matched = coreRes.couriers.find(c =>
+                        isSameCourier(c.name, currentCourier.name) ||
+                        (currentCourier.user && String(c.user || '').trim().toLowerCase() === currentCourier.user.toLowerCase()) ||
+                        String(c.id || '').trim() === currentCourier.id
+                    );
+                    if (matched) {
+                        currentCourier = {
+                            id: String(matched.id || currentCourier.id).trim(),
+                            name: String(matched.name || currentCourier.name).trim(),
+                            phone: String(matched.phone || currentCourier.phone).trim(),
+                            user: String(matched.user || currentCourier.user).trim(),
+                            zone: String(matched.zone || currentCourier.zone).trim(),
+                            comm: parseFloat(matched.comm) || 20,
+                            avatar: matched.avatar || currentCourier.avatar || ''
+                        };
+                    }
+                }
+
+                if (opsRes && opsRes.status === 'success' && Array.isArray(opsRes.orders)) {
+                    myOrders = opsRes.orders
+                        .filter(o => o.awb && String(o.awb).trim() !== '' && isSameCourier(o.courier, currentCourier.name))
+                        .map(formatOrder);
+                }
+
+                setSyncStatus('ok', `✅ محدث من السحابة (${myOrders.length} شحنة) ✓`);
+            } catch (e) {
+                setSyncStatus('error', '❌ تعذر التحديث من السحابة');
+            }
+
+            renderAll();
+            clearTimeout(safetyTimer);
+            if (bar) bar.style.width = '100%';
+            setTimeout(() => { document.getElementById('jet-cloud-preloader')?.classList.add('loaded'); }, 220);
+        }
+
+        // =========================================================================
+        // عرض الشاشات والكروت والعهدة
+        // =========================================================================
+        function renderAll() {
+            applyCompanyBranding();
+
+            document.getElementById('header-courier-name').innerText = currentCourier.name;
+            document.getElementById('header-courier-zone').innerText = currentCourier.zone;
+            document.getElementById('hero-cr-name').innerText = currentCourier.name;
+            document.getElementById('hero-cr-id').innerText = '#' + currentCourier.id;
+            document.getElementById('hero-cr-zone').innerText = currentCourier.zone;
+            document.getElementById('sidebar-cr-id').innerText = '#' + currentCourier.id;
+            document.getElementById('sidebar-cr-comm').innerText = `${currentCourier.comm} ج.م / أوردر`;
+
+            const avatar = localStorage.getItem('jet_cr_avatar_' + currentCourier.id) || currentCourier.avatar || '';
+            ['header-avatar', 'profile-big'].forEach(prefix => {
+                const img = document.getElementById(prefix + '-img'), ico = document.getElementById(prefix + '-icon');
+                if (img && ico) {
+                    if (avatar) { img.src = avatar; img.classList.remove('hidden'); ico.classList.add('hidden'); }
+                    else { img.classList.add('hidden'); ico.classList.remove('hidden'); }
+                }
+            });
+
+            renderKPIsAndCustody();
+            renderActiveRouteCards();
+            renderAllOrdersTable();
+            renderProfileAndPerformance();
+        }
+
+        function getCustodyStats() {
+            const unsettled = myOrders.filter(o => !o.settledCourier);
+            const cash = unsettled.reduce((s, o) => s + (parseFloat(o.paid) || 0), 0);
+            const comm = unsettled.filter(o => isEarnedCommStatus(o.status)).reduce((s, o) => s + (parseFloat(o.courierComm) || 0), 0);
+            const returnsInHand = unsettled.filter(o => String(o.status).includes('مرتجع')).length;
+            const activeRoute = unsettled.filter(o => ['جديد', 'قيد التأكيد', 'جاهز للشحن', 'تم الشحن مع المندوب', 'مؤجل'].includes(o.status));
+            return { unsettled, cash, comm, netToBranch: cash - comm, returnsInHand, activeRoute };
+        }
+
+        function renderKPIsAndCustody() {
+            const st = getCustodyStats();
+
+            document.getElementById('kpi-cash-hand').innerText = st.cash.toLocaleString() + ' ج.م';
+            document.getElementById('kpi-my-comm').innerText = st.comm.toLocaleString() + ' ج.م';
+            document.getElementById('kpi-net-branch').innerText = st.netToBranch.toLocaleString() + ' ج.م';
+            document.getElementById('kpi-returns-hand').innerText = st.returnsInHand + ' طرد';
+            document.getElementById('kpi-active-count').innerText = st.activeRoute.length;
+
+            document.getElementById('badge-active-route').innerText = st.activeRoute.length;
+            document.getElementById('badge-all-orders').innerText = myOrders.length;
+            document.getElementById('badge-custody-count').innerText = st.unsettled.length;
+
+            // شاشة كشف العهدة
+            document.getElementById('cust-courier-info').innerText = `المندوب: ${currentCourier.name} (#${currentCourier.id}) | خط السير: ${currentCourier.zone} | هاتف: ${currentCourier.phone}`;
+            document.getElementById('cust-date').innerText = getFormattedNow();
+            document.getElementById('cust-cash').innerText = st.cash.toLocaleString() + ' ج.م';
+            document.getElementById('cust-comm').innerText = st.comm.toLocaleString() + ' ج.م';
+            document.getElementById('cust-returns').innerText = st.returnsInHand + ' طرد';
+            document.getElementById('cust-net').innerText = st.netToBranch.toLocaleString() + ' ج.م';
+
+            const custTbody = document.getElementById('custody-orders-tbody');
+            custTbody.innerHTML = st.unsettled.length === 0
+                ? `<tr><td colspan="8" class="p-6 text-center text-emerald-600 font-bold">ممتاز! عهدتك مقفلة بالكامل مع الفرع (0 ج.م) ✓</td></tr>`
+                : st.unsettled.map(o => {
+                    const earned = isEarnedCommStatus(o.status) ? (parseFloat(o.courierComm) || 0) : 0;
+                    const netRow = (parseFloat(o.paid) || 0) - earned;
+                    return `<tr>
+                        <td class="p-2 font-mono font-black text-brand">#${o.awb}</td>
+                        <td class="p-2 font-bold">${o.merchant}</td>
+                        <td class="p-2 font-bold">${o.recipient}</td>
+                        <td class="p-2 font-bold">${o.status}</td>
+                        <td class="p-2 font-black text-blue-700">${o.paid} ج.م</td>
+                        <td class="p-2 font-black text-emerald-600">${earned} ج.م</td>
+                        <td class="p-2 font-black text-slate-900">${netRow} ج.م</td>
+                        <td class="p-2 text-[10px] text-slate-500">${o.actionAt || o.createdAt || ''}</td>
+                    </tr>`;
+                }).join('');
+        }
+
+        function renderActiveRouteCards() {
+            const q = (document.getElementById('route-search')?.value || '').toLowerCase();
+            const list = getCustodyStats().activeRoute.filter(o =>
+                String(o.awb).toLowerCase().includes(q) ||
+                String(o.recipient).toLowerCase().includes(q) ||
+                String(o.phone).includes(q) ||
+                String(o.address).toLowerCase().includes(q) ||
+                String(o.gov).toLowerCase().includes(q) ||
+                String(o.merchant).toLowerCase().includes(q)
+            );
+
+            document.getElementById('route-cards-count').innerText = list.length;
+            const container = document.getElementById('active-route-cards');
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="md:col-span-2 xl:col-span-3 bg-white p-10 rounded-3xl border text-center space-y-2">
+                    <div class="text-4xl text-emerald-500"><i class="fa-solid fa-circle-check"></i></div>
+                    <h3 class="font-black text-base text-slate-800">لا توجد شحنات متبقية في خط سيرك النشط حالياً!</h3>
+                    <p class="text-xs text-slate-400">اضغط على "تحديث" لفحص الشحنات الجديدة، أو ادخل على "تقفيل العهدة" لتوريد التحصيلات للفرع.</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(o => {
+                const cod = getOrderCod(o);
+                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((o.gov || '') + ' ' + (o.address || ''))}`;
+                const waClientMsg = `مرحباً أستاذ/ة ${o.recipient}،\nمع حضرتك مندوب شركة ${companyProfile.name || 'JET'} للشحن بخصوص أوردر (${o.merchant}) بوليصة #${o.awb} بقيمة ${cod} ج.م.\nأنا في طريقي إليك الآن.`;
+
+                return `
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between">
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2.5">
+                            <div>
+                                <span class="font-mono font-black text-brand text-sm">#${o.awb}</span>
+                                <span class="mr-1.5 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[10px]">${o.merchant}</span>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${o.status === 'مؤجل' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800'}">${o.status}</span>
+                        </div>
+
+                        <div>
+                            <h3 class="font-black text-base text-slate-900">${o.recipient}</h3>
+                            <div class="text-slate-500 font-bold mt-0.5 flex items-start gap-1.5">
+                                <i class="fa-solid fa-location-dot text-brand mt-0.5"></i>
+                                <span>${o.gov} — ${o.address || 'بدون عنوان تفصيلي'}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-center">
+                            <div class="p-2.5 rounded-2xl bg-slate-900 text-white">
+                                <span class="text-[10px] text-slate-300 block">المطلوب تحصيله</span>
+                                <strong class="text-base font-black text-amber-400">${cod.toLocaleString()} ج.م</strong>
+                            </div>
+                            <div class="p-2.5 rounded-2xl bg-slate-50 border">
+                                <span class="text-[10px] text-slate-400 block">سعر الشحن / عمولتك</span>
+                                <strong class="text-sm font-black text-slate-800">${o.fee} / <span class="text-emerald-600">${o.courierComm} ج.م</span></strong>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-extrabold text-slate-800 truncate max-w-[85%]"><i class="fa-solid fa-box text-orange-500 ml-1"></i>${o.items}</span>
+                                <button onclick="openItemDetailsModal('${o.awb}')" class="text-[10px] font-black text-brand underline">التفاصيل</button>
+                            </div>
+                            ${o.notes ? `<div class="text-[11px] font-bold text-amber-900"><i class="fa-solid fa-comment-dots ml-1"></i>${o.notes}</div>` : ''}
+                        </div>
+
+                        <!-- أزرار التواصل والموقع -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <a href="tel:${o.phone}" class="py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-center flex items-center justify-center gap-1"><i class="fa-solid fa-phone"></i><span>اتصال</span></a>
+                            <a href="https://wa.me/2${o.phone}?text=${encodeURIComponent(waClientMsg)}" target="_blank" class="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-center flex items-center justify-center gap-1"><i class="fa-brands fa-whatsapp text-sm"></i><span>واتساب</span></a>
+                            <a href="${mapsUrl}" target="_blank" class="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-center flex items-center justify-center gap-1"><i class="fa-solid fa-map-location-dot text-brand"></i><span>الخريطة</span></a>
+                        </div>
+                    </div>
+
+                    <!-- أزرار تنفيذ الحالة الفورية -->
+                    <div class="p-3 bg-slate-50 border-t grid grid-cols-2 gap-2">
+                        <button onclick="quickDeliverOrder('${o.awb}')" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl shadow-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i><span>تم التسليم ✓</span>
+                        </button>
+                        <button onclick="openUpdateStatusModal('${o.awb}')" class="py-2.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black rounded-xl shadow-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-sliders"></i><span>مرتجع / مؤجل / جزئي</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderAllOrdersTable() {
+            const q = (document.getElementById('filter-orders-search')?.value || '').toLowerCase();
+            const flt = document.getElementById('filter-orders-status')?.value || 'ALL';
+
+            const filtered = myOrders.filter(o => {
+                const matchText = String(o.awb).toLowerCase().includes(q) || String(o.recipient).toLowerCase().includes(q) || String(o.phone).includes(q) || String(o.merchant).toLowerCase().includes(q);
+                if (!matchText) return false;
+                if (flt === 'ACTIVE') return !o.settledCourier && ['جديد', 'قيد التأكيد', 'جاهز للشحن', 'تم الشحن مع المندوب', 'مؤجل'].includes(o.status);
+                if (flt === 'DELIVERED') return String(o.status).includes('تم التسليم');
+                if (flt === 'RETURNED') return String(o.status).includes('مرتجع');
+                if (flt === 'SETTLED') return o.settledCourier;
+                return true;
+            });
+
+            document.getElementById('all-orders-count').innerText = myOrders.length;
+            const tbody = document.getElementById('all-orders-tbody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400 font-bold">لا توجد شحنات مطابقة للبحث</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(o => {
+                const cod = getOrderCod(o);
+                const earned = isEarnedCommStatus(o.status) ? (parseFloat(o.courierComm) || 0) : 0;
+                const statusBadge = String(o.status).includes('تم التسليم') ? 'bg-emerald-100 text-emerald-800' : String(o.status).includes('مرتجع') ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800';
+                return `<tr class="hover:bg-slate-50 ${o.settledCourier ? 'opacity-70 bg-slate-50/70' : ''}">
+                    <td class="p-3 font-mono font-black text-brand">#${o.awb}</td>
+                    <td class="p-3 font-bold">${o.merchant}</td>
+                    <td class="p-3"><div class="font-extrabold text-slate-900">${o.recipient}</div><a href="tel:${o.phone}" class="text-[10px] font-mono text-blue-600 underline">${o.phone}</a></td>
+                    <td class="p-3">${o.gov}</td>
+                    <td class="p-3 max-w-[140px] truncate"><button onclick="openItemDetailsModal('${o.awb}')" class="underline font-bold">${o.items}</button></td>
+                    <td class="p-3 font-black">${cod} ج.م</td>
+                    <td class="p-3 font-black text-blue-700">${o.paid} ج.م</td>
+                    <td class="p-3 font-black text-emerald-600">${earned} ج.م</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${statusBadge}">${o.status}</span></td>
+                    <td class="p-3 font-bold text-[11px]">${o.settledCourier ? '<span class="text-emerald-600">تم التوريد ✓</span>' : '<span class="text-amber-600">بعهدتك</span>'}</td>
+                    <td class="p-3 text-center">
+                        ${!o.settledCourier ? `<button onclick="openUpdateStatusModal('${o.awb}')" class="px-3 py-1.5 bg-slate-900 text-amber-400 rounded-lg font-bold text-[11px]">تحديث</button>` : '<span class="text-slate-400 text-[10px]">مقفلة</span>'}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderProfileAndPerformance() {
+            document.getElementById('prof-cr-name').innerText = currentCourier.name;
+            document.getElementById('prof-cr-zone').innerText = 'منطقة: ' + currentCourier.zone;
+            document.getElementById('prof-cr-comm-badge').innerText = `العمولة الأساسية: ${currentCourier.comm} ج.م / أوردر`;
+            document.getElementById('prof-cr-id').innerText = '#' + currentCourier.id;
+            document.getElementById('prof-cr-phone').innerText = currentCourier.phone;
+            document.getElementById('prof-cr-user').innerText = currentCourier.user || currentCourier.name;
+
+            const delivered = myOrders.filter(o => String(o.status).includes('تم التسليم')).length;
+            const returned = myOrders.filter(o => String(o.status).includes('مرتجع')).length;
+            const rate = (delivered + returned) > 0 ? Math.round((delivered / (delivered + returned)) * 100) : 100;
+            const totalComm = myOrders.filter(o => isEarnedCommStatus(o.status)).reduce((s, o) => s + (parseFloat(o.courierComm) || 0), 0);
+
+            document.getElementById('perf-success-rate').innerText = rate + '%';
+            document.getElementById('perf-total-delivered').innerText = delivered;
+            document.getElementById('perf-total-comm').innerText = totalComm.toLocaleString() + ' ج.م';
+        }
+
+        // =========================================================================
+        // تحديث حالة الشحنة بأمان في شيت التشغيل (OPS_DB)
+        // =========================================================================
+        async function saveCourierOrderMutation(awb, newStatus, paidAmount, noteText) {
+            setSyncStatus('saving', `⏳ جاري حفظ تحديث #${awb}...`);
+            const remoteRes = await fetch(`${JET_CLOUD_URLS.OPS_DB}?t=${Date.now()}`, { cache: 'no-store' }).then(r => r.json()).catch(() => null);
+            let allOrders = (remoteRes && remoteRes.status === 'success' && Array.isArray(remoteRes.orders))
+                ? remoteRes.orders.filter(o => o.awb && String(o.awb).trim() !== '').map(formatOrder)
+                : [...myOrders];
+
+            const target = allOrders.find(o => String(o.awb).toUpperCase() === String(awb).toUpperCase());
+            if (!target) throw new Error('لم يتم العثور على البوليصة');
+            if (target.settledCourier) throw new Error('هذه الشحنة مقفلة بالفعل مع الفرع ولا يمكن تعديلها');
+
+            const nowStr = getFormattedNow();
+            target.status = newStatus;
+            target.paid = parseFloat(paidAmount) || 0;
+            if (noteText !== undefined && noteText !== null && noteText.trim() !== '') {
+                target.notes = noteText.trim();
+            }
+            target.actionAt = `${newStatus} (بواسطة ${currentCourier.name}): ${nowStr}`;
+            if (!Array.isArray(target.historyLog)) target.historyLog = [];
+            target.historyLog.unshift({ action: `${newStatus} — المحصل: ${target.paid} ج.م${noteText ? ' | ' + noteText : ''}`, time: nowStr });
+
+            const saveRes = await fetch(JET_CLOUD_URLS.OPS_DB, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'SYNC_ORDERS', orders: allOrders })
+            }).then(r => r.json());
+
+            if (!saveRes || saveRes.status !== 'success') throw new Error('تعذر الحفظ في الشيت');
+
+            myOrders = allOrders.filter(o => isSameCourier(o.courier, currentCourier.name));
+            renderAll();
+            setSyncStatus('ok', `✅ تم تحديث #${awb} إلى (${newStatus}) ✓`);
+        }
+
+        async function quickDeliverOrder(awb) {
+            const o = myOrders.find(x => x.awb === awb);
+            if (!o) return;
+            const cod = getOrderCod(o);
+            if (!confirm(`تأكيد تسليم البوليصة #${awb} للعميل (${o.recipient}) وتحصيل مبلغ (${cod} ج.م) بالكامل؟`)) return;
+            try {
+                await saveCourierOrderMutation(awb, 'تم التسليم', cod, o.notes || '');
+            } catch (e) {
+                alert('⚠️ ' + (e.message || 'تعذر تحديث الحالة، تأكد من الإنترنت'));
+                setSyncStatus('error', '❌ فشل التحديث');
+            }
+        }
+
+        function openUpdateStatusModal(awb) {
+            const o = myOrders.find(x => x.awb === awb);
+            if (!o) return;
+            const cod = getOrderCod(o);
+            document.getElementById('upd-awb-hidden').value = o.awb;
+            document.getElementById('upd-awb-title').innerText = '#' + o.awb;
+            document.getElementById('upd-recipient').innerText = `${o.recipient} (${o.phone})`;
+            document.getElementById('upd-cod-total').innerText = cod.toLocaleString() + ' ج.م';
+            document.getElementById('upd-ship-fee').innerText = o.fee + ' ج.م';
+            document.getElementById('upd-status-select').value = ['تم التسليم', 'تم التسليم جزئي', 'مؤجل', 'مرتجع وتم دفع الشحن', 'مرتجع ولم يدفع الشحن', 'تم الشحن مع المندوب'].includes(o.status) ? o.status : 'تم التسليم';
+            document.getElementById('upd-note-input').value = o.notes || '';
+            onCourierStatusSelectChange();
+            openModal('modal-update-order');
+        }
+
+        function onCourierStatusSelectChange() {
+            const awb = document.getElementById('upd-awb-hidden').value;
+            const o = myOrders.find(x => x.awb === awb);
+            if (!o) return;
+            const st = document.getElementById('upd-status-select').value;
+            const cod = getOrderCod(o);
+            const paidInp = document.getElementById('upd-paid-input');
+            if (st === 'تم التسليم') paidInp.value = cod;
+            else if (st === 'تم التسليم جزئي') paidInp.value = o.paid > 0 ? o.paid : Math.round(cod / 2);
+            else if (st === 'مرتجع وتم دفع الشحن') paidInp.value = o.fee;
+            else paidInp.value = 0;
+        }
+
+        async function confirmCourierOrderUpdate() {
+            const awb = document.getElementById('upd-awb-hidden').value;
+            const st = document.getElementById('upd-status-select').value;
+            const paid = parseFloat(document.getElementById('upd-paid-input').value) || 0;
+            const note = document.getElementById('upd-note-input').value.trim();
+
+            const btn = document.getElementById('btn-confirm-status');
+            btn.disabled = true; btn.innerText = '⏳ جاري الحفظ...';
+            try {
+                await saveCourierOrderMutation(awb, st, paid, note);
+                closeModal('modal-update-order');
+            } catch (e) {
+                alert('⚠️ ' + (e.message || 'تعذر حفظ التحديث'));
+                setSyncStatus('error', '❌ فشل التحديث');
+            } finally {
+                btn.disabled = false; btn.innerText = 'حفظ وتحديث الحالة الآن';
+            }
+        }
+
+        function openItemDetailsModal(awb) {
+            const o = myOrders.find(x => x.awb === awb);
+            if (!o) return;
+            const cod = getOrderCod(o);
+            document.getElementById('item-details-body').innerHTML = `
+                <div class="flex justify-between border-b pb-2"><span class="text-slate-400 font-bold">البوليصة والتاجر:</span><strong class="text-brand">#${o.awb} (${o.merchant})</strong></div>
+                <div><span class="text-slate-400 font-bold block">المستلم والعنوان:</span><strong class="text-slate-900 block">${o.recipient} (${o.phone})</strong><p class="text-slate-600 mt-0.5">${o.gov} — ${o.address}</p></div>
+                <div class="p-3 rounded-xl bg-orange-50 border border-orange-200"><span class="text-[11px] font-bold text-orange-800 block">محتوى الطرد:</span><strong class="text-slate-900">${o.items}</strong></div>
+                <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-2.5 rounded-xl border">
+                    <div><span class="text-[10px] text-slate-400 block">المنتج</span><strong>${o.prodPrice} ج.م</strong></div>
+                    <div><span class="text-[10px] text-slate-400 block">الشحن</span><strong>${o.fee} ج.م</strong></div>
+                    <div><span class="text-[10px] text-slate-400 block">الإجمالي</span><strong class="text-emerald-700">${cod} ج.م</strong></div>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200"><span class="text-[11px] font-bold text-amber-800 block">ملاحظات:</span><p class="font-bold text-slate-800 mt-0.5">${o.notes || 'لا توجد ملاحظات'}</p></div>`;
+            openModal('modal-item-details');
+        }
+
+        function notifyBranchHandover() {
+            const st = getCustodyStats();
+            const msg = `مرحباً إدارة ${companyProfile.name || 'JET'}،\nأنا المندوب: *${currentCourier.name}* (#${currentCourier.id})\nجاهز لتقفيل وتوريد عهدتي اليوم:\n• إجمالي الكاش المُحصّل: *${st.cash.toLocaleString()} ج.م*\n• عمولتي المستحقة: *${st.comm.toLocaleString()} ج.م*\n• صافي المطلوب توريده للفرع: *${st.netToBranch.toLocaleString()} ج.م*\n• عدد المرتجعات بيدي: *${st.returnsInHand} طرد*\nالتاريخ: ${getFormattedNow()}`;
+            window.open(getCompanyWhatsAppUrl(msg), '_blank');
+        }
+
+        // =========================================================================
+        // ماسح الكاميرا، الصورة الشخصية، والطباعة
+        // =========================================================================
+        function openCameraScannerModal() { document.getElementById('cam-manual-awb').value = ''; openModal('modal-camera-scanner'); }
+        async function closeCameraScannerModal() {
+            if (html5QrScanner) { try { await html5QrScanner.stop(); html5QrScanner.clear(); } catch (e) {} html5QrScanner = null; }
+            closeModal('modal-camera-scanner');
+        }
+        function startRealCamera() {
+            if (typeof Html5Qrcode === 'undefined') return alert('جاري تحميل محرك الكاميرا...');
+            if (html5QrScanner) return;
+            html5QrScanner = new Html5Qrcode("qr-reader-mount");
+            html5QrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 240, height: 120 } }, async (decodedText) => {
+                const clean = String(decodedText || '').replace(/\*/g, '').replace(/#/g, '').trim();
+                if (clean) {
+                    await closeCameraScannerModal();
+                    openOrderByScannedCode(clean);
+                }
+            }, () => {}).catch(() => { alert('تعذر فتح الكاميرا، تأكد من إعطاء صلاحية الكاميرا للمتصفح'); html5QrScanner = null; });
+        }
+        function lookupScannedAwb() {
+            const code = (document.getElementById('cam-manual-awb')?.value || '').replace(/\*/g, '').replace(/#/g, '').trim();
+            if (!code) return alert('اكتب رقم البوليصة أولاً');
+            closeCameraScannerModal();
+            openOrderByScannedCode(code);
+        }
+        function openOrderByScannedCode(code) {
+            const found = myOrders.find(o => String(o.awb).toUpperCase() === code.toUpperCase());
+            if (!found) return alert(`⚠️ البوليصة (#${code}) غير موجودة ضمن شحناتك المسندة إليك حالياً.`);
+            if (found.settledCourier) return alert(`✅ البوليصة (#${code}) مقفلة وموردة للفرع بالفعل.`);
+            openUpdateStatusModal(found.awb);
+        }
+
+        function handleCourierAvatarUpload(event) {
+            const f = event.target.files[0]; if (!f) return;
+            const r = new FileReader();
+            r.onload = e => {
+                localStorage.setItem('jet_cr_avatar_' + currentCourier.id, e.target.result);
+                renderAll();
+                fetch(JET_CLOUD_URLS.CORE_DB, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'UPDATE_AVATAR', targetTab: 'Couriers', keyField: 'id', keyValue: currentCourier.id, avatarDataUrl: e.target.result })
+                }).catch(() => {});
+            };
+            r.readAsDataURL(f);
+        }
+
+        function printElement(elemId) {
+            const src = document.getElementById(elemId); if (!src) return;
+            document.getElementById('print-mount-root').innerHTML = src.innerHTML;
+            setTimeout(() => window.print(), 120);
+        }
+
+        // =========================================================================
+        // التنقل الذكي وزر الرجوع للموبايل
+        // =========================================================================
+        function setSidebarMode(mode) { const sb = document.getElementById('main-sidebar'); sb.classList.remove('sidebar-full', 'sidebar-mini', 'sidebar-closed'); sb.classList.add('sidebar-' + mode); }
+
+        let isHandlingPopState = false;
+        function toggleMobileSidebar(open, skipHistory = false) {
+            const sb = document.getElementById('main-sidebar'), bd = document.getElementById('mobile-sidebar-backdrop');
+            if (open) { sb.classList.add('mobile-open'); bd.classList.remove('hidden'); if (!skipHistory && !isHandlingPopState) history.pushState({ type: 'sidebar' }, '', '#sidebar'); }
+            else { sb.classList.remove('mobile-open'); bd.classList.add('hidden'); }
+        }
+
+        function switchTab(tabId, clickedBtn, skipHistory = false) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId)?.classList.add('active');
+            const targetBtn = clickedBtn || document.getElementById('nav-btn-' + tabId.replace('tab-', ''));
+            if (targetBtn) {
+                document.querySelectorAll('#main-sidebar .nav-btn').forEach(b => b.classList.remove('bg-brand', 'text-white'));
+                targetBtn.classList.add('bg-brand', 'text-white');
+            }
+            document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('text-brand'));
+            document.getElementById('mob-nav-' + tabId.replace('tab-', ''))?.classList.add('text-brand');
+            toggleMobileSidebar(false, true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (!skipHistory && !isHandlingPopState) history.pushState({ type: 'tab', tabId }, '', '#' + tabId);
+        }
+
+        function openModal(id) { const m = document.getElementById(id); if (!m) return; m.classList.remove('hidden'); m.classList.add('flex'); if (!isHandlingPopState) history.pushState({ type: 'modal', modalId: id }, '', '#' + id); }
+        function closeModal(id) { const m = document.getElementById(id); if (!m) return; m.classList.add('hidden'); m.classList.remove('flex'); }
+        function handleBackdropClick(e, id) { if (e.target.id === id) { if (id === 'modal-camera-scanner') closeCameraScannerModal(); else closeModal(id); } }
+
+        window.addEventListener('popstate', async () => {
+            isHandlingPopState = true;
+            const cam = document.getElementById('modal-camera-scanner');
+            if (cam && !cam.classList.contains('hidden')) {
+                await closeCameraScannerModal();
+                const activePane = document.querySelector('.tab-pane.active');
+                history.pushState({ type: 'tab', tabId: activePane ? activePane.id : 'tab-overview' }, '', '#' + (activePane ? activePane.id : 'tab-overview'));
+                isHandlingPopState = false; return;
+            }
+            const openModals = Array.from(document.querySelectorAll('.modal-backdrop')).filter(m => !m.classList.contains('hidden'));
+            if (openModals.length > 0) {
+                openModals.forEach(m => { m.classList.add('hidden'); m.classList.remove('flex'); });
+                const activePane = document.querySelector('.tab-pane.active');
+                history.pushState({ type: 'tab', tabId: activePane ? activePane.id : 'tab-overview' }, '', '#' + (activePane ? activePane.id : 'tab-overview'));
+                isHandlingPopState = false; return;
+            }
+            const sb = document.getElementById('main-sidebar');
+            if (sb && sb.classList.contains('mobile-open')) {
+                toggleMobileSidebar(false, true);
+                const activePane = document.querySelector('.tab-pane.active');
+                history.pushState({ type: 'tab', tabId: activePane ? activePane.id : 'tab-overview' }, '', '#' + (activePane ? activePane.id : 'tab-overview'));
+                isHandlingPopState = false; return;
+            }
+            const cur = document.querySelector('.tab-pane.active');
+            if (cur && cur.id !== 'tab-overview') {
+                switchTab('tab-overview', document.getElementById('nav-btn-overview'), true);
+                history.pushState({ type: 'tab', tabId: 'tab-overview' }, '', '#tab-overview');
+            }
+            isHandlingPopState = false;
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            history.replaceState({ type: 'home', tabId: 'tab-overview' }, '', '#tab-overview');
+            history.pushState({ type: 'tab', tabId: 'tab-overview' }, '', '#tab-overview');
+            renderAll();
+            pullCourierDataFromSheets();
+        });
+    </script>
+</body>
+</html>
