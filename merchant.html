@@ -14,7 +14,7 @@
             background-color: #f1f5f9;
             min-height: 100dvh;
             height: auto;
-            overflow-x: hidden;
+            overflow-x: clip !important;
             overflow-y: auto;
             overscroll-behavior-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -33,6 +33,31 @@
         .jet-grad { background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, var(--brand-primary) 100%); }
         .egateway-grad { background: linear-gradient(135deg, #06b6d4 0%, #0284c7 50%, #1e3a8a 100%); }
         .egateway-badge { background: linear-gradient(135deg, rgba(6,182,212,0.14), rgba(30,58,138,0.14)); color: #0369a1; border: 1px solid rgba(6,182,212,0.45); }
+
+        /* إصلاح السحب يمين وشمال في الجداول والصفحات على الموبايل مع بقاء الريفريش */
+        body > div.flex {
+            width: 100% !important;
+            max-width: 100vw !important;
+            min-width: 0 !important;
+        }
+        main, .tab-pane {
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+        @media (max-width: 1023px) {
+            main {
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+        }
+        .table-responsive-scroll {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-x pan-y !important;
+        }
 
         #jet-cloud-preloader {
             position: fixed; inset: 0; z-index: 99999;
@@ -68,7 +93,6 @@
         .modal-backdrop { overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .modal-card { max-height: 90vh; display: flex; flex-direction: column; margin: auto; }
         .modal-body-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; }
-        .table-responsive-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -810,7 +834,6 @@
 
         const ALL_STATUSES = ["جديد", "قيد التأكيد", "جاهز للشحن", "تم الشحن مع المندوب", "تم التسليم", "تم التسليم جزئي", "مؤجل", "تم الإلغاء", "مرتجع وتم دفع الشحن", "مرتجع ولم يدفع الشحن"];
 
-        // تنسيق ذكي لأي رقم واتساب مصري أو دولي لفتح المحادثة مباشرة بدون تكرار كود الدولة
         function formatWhatsAppNumber(raw) {
             let digits = String(raw || '').replace(/\D/g, '');
             if (!digits) return '';
@@ -826,7 +849,6 @@
             return text ? `https://wa.me/${clean}?text=${encodeURIComponent(text)}` : `https://wa.me/${clean}`;
         }
 
-        // إعدادات الشركة (يتم تحديثها تلقائياً من تبويب إعدادات_الشركة في شيت 1_Core_DB على أي جهاز)
         let companyProfile = JSON.parse(localStorage.getItem('jet_company_profile') || 'null') || {
             name: localStorage.getItem('jet_company_name') || 'JET',
             tagline: 'جيت للشحن والخدمات اللوجستية',
@@ -959,7 +981,6 @@
             return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
         }
 
-        // محلل العروض والقطع الذكي (متطابق مع admin.html)
         function extractBaseProductName(offerTitle) {
             let s = String(offerTitle || '').trim();
             s = s.replace(/^(عرض|باكيدج|مجموعة|بكج)\s*(الـ?|ال)?\s*\d*\s*/i, '');
@@ -1082,7 +1103,6 @@
                 ]);
 
                 if (coreRes && coreRes.status === 'success') {
-                    // سحب إعدادات الشركة ورقم الواتساب الرسمي من شيت 1_Core_DB مباشرة
                     if (coreRes.settings && typeof coreRes.settings === 'object' && Object.keys(coreRes.settings).length > 0) {
                         companyProfile = { ...companyProfile, ...coreRes.settings };
                         if (companyProfile.logoDataUrl) localStorage.setItem('jet_permanent_logo_base64', companyProfile.logoDataUrl);
