@@ -104,7 +104,7 @@
         <p id="prime-loader-sub" class="text-[11px] font-bold text-slate-300 mt-3">جاري سحب البيانات الحية لشركة JET من Google Sheets...</p>
     </div>
 
-    <!-- مؤشر المزامنة السحابية -->
+    <!-- مؤشر المزامنة السحابية الحقيقي -->
     <div id="prime-sync-badge" class="no-print fixed bottom-16 lg:bottom-4 left-4 z-40 bg-slate-900 text-white px-3.5 py-2 rounded-xl text-[11px] font-extrabold flex items-center gap-2 shadow-xl border border-white/10">
         <span id="prime-sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
         <span id="prime-sync-text">متصل بـ Google Sheets لشركة JET ✓</span>
@@ -123,7 +123,7 @@
                 <button onclick="setSidebarMode('mini')" id="mode-mini-btn" title="تصغير للأيقونات" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-900 transition"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 <button onclick="setSidebarMode('closed')" id="mode-closed-btn" title="إغلاق القائمة" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <button onclick="pullAllFromGoogleSheets(true)" title="تحديث وسحب كافة الشحنات من جوجل شيت الآن" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-black flex items-center gap-1.5 transition">
+            <button onclick="pullAllFromGoogleSheets(true)" title="تحديث وسحب كافة البيانات من جوجل شيت الآن" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-black flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-rotate"></i><span>تحديث من الشيت</span>
             </button>
         </div>
@@ -204,7 +204,7 @@
             <div class="p-3.5 border-t border-white/10 text-[11px] text-slate-400 sidebar-footer-details bg-black/20">
                 <div class="font-extrabold text-white mb-1.5 flex items-center justify-between"><span>شيتات JET السحابية</span><span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px]">متصل ✓</span></div>
                 <div class="space-y-0.5 text-[10px]">
-                    <div class="flex justify-between"><span>1. شيت الحسابات (Core):</span><span class="text-emerald-400 font-bold">مربوط ✓</span></div>
+                    <div class="flex justify-between"><span>1. شيت الحسابات والإعدادات:</span><span class="text-emerald-400 font-bold">مربوط ✓</span></div>
                     <div class="flex justify-between"><span>2. شيت التشغيل (Ops):</span><span class="text-emerald-400 font-bold">مربوط ✓</span></div>
                     <div class="flex justify-between"><span>3. شيت الخزنة (Fin):</span><span class="text-emerald-400 font-bold">مربوط ✓</span></div>
                 </div>
@@ -357,7 +357,7 @@
                 </div>
             </div>
 
-            <!-- ================= الصفحة 3: التجار والشيتات (مع التحديد والحذف الجماعي والفردي) ================= -->
+            <!-- ================= الصفحة 3: التجار والشيتات (مع التحديد والحذف) ================= -->
             <div id="tab-merchants" class="tab-pane space-y-4">
                 <div class="bg-slate-900 text-white p-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex items-center gap-2">
@@ -398,7 +398,7 @@
                 </div>
             </div>
 
-            <!-- ================= الصفحة 4: المناديب والعهدة (مع التحديد والحذف الجماعي والفردي) ================= -->
+            <!-- ================= الصفحة 4: المناديب والعهدة (مع التحديد والحذف) ================= -->
             <div id="tab-couriers" class="tab-pane space-y-4">
                 <div class="bg-slate-900 text-white p-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex items-center gap-3">
@@ -421,7 +421,7 @@
                 <div id="couriers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs"></div>
             </div>
 
-            <!-- ================= الصفحة 5: الشركاء ونسب الأرباح (مع التحديد والحذف والتصفير الفوري) ================= -->
+            <!-- ================= الصفحة 5: الشركاء ونسب الأرباح ================= -->
             <div id="tab-partners" class="tab-pane space-y-5">
                 <div class="bg-gradient-to-l from-slate-900 via-zinc-900 to-red-950 text-white p-5 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -435,29 +435,10 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                        <span class="text-slate-400 font-bold block">عدد الشركاء المسجلين</span>
-                        <strong id="prt-kpi-count" class="text-2xl font-black text-slate-900 mt-1.5 block">0 شريك</strong>
-                        <span class="text-[11px] text-red-600 font-bold mt-2 block">لهم أكونتات فعالة بالنظام</span>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border-2 border-red-500/40 shadow-sm">
-                        <span class="text-red-800 font-extrabold block">مجموع نسب الشركاء (من 100%)</span>
-                        <strong id="prt-kpi-total-pct" class="text-2xl font-black text-red-600 mt-1.5 block">0%</strong>
-                        <span id="prt-kpi-rem-pct" class="text-[11px] text-emerald-700 font-bold mt-2 block">حصة الشركة/المالك المتبقية: 100%</span>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                        <span class="text-slate-400 font-bold block">إجمالي أرباح الشركاء الحالية</span>
-                        <strong id="prt-kpi-dues" class="text-2xl font-black text-emerald-600 mt-1.5 block">0 ج.م</strong>
-                        <span class="text-[11px] text-slate-500 font-bold mt-2 block">المتبقي غير المصروف حالياً</span>
-                    </div>
-
-                    <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm">
-                        <span class="text-amber-400 font-extrabold block">صافي حصة المالك الأساسي بعد الشركاء</span>
-                        <strong id="prt-kpi-owner-net" class="text-2xl font-black text-white mt-1.5 block">0 ج.م</strong>
-                        <span class="text-[11px] text-slate-300 font-bold mt-2 block">الصافي المتبقي للإدارة</span>
-                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-slate-400 font-bold block">عدد الشركاء المسجلين</span><strong id="prt-kpi-count" class="text-2xl font-black text-slate-900 mt-1.5 block">0 شريك</strong><span class="text-[11px] text-red-600 font-bold mt-2 block">لهم أكونتات فعالة بالنظام</span></div>
+                    <div class="bg-white p-5 rounded-2xl border-2 border-red-500/40 shadow-sm"><span class="text-red-800 font-extrabold block">مجموع نسب الشركاء (من 100%)</span><strong id="prt-kpi-total-pct" class="text-2xl font-black text-red-600 mt-1.5 block">0%</strong><span id="prt-kpi-rem-pct" class="text-[11px] text-emerald-700 font-bold mt-2 block">حصة الشركة/المالك المتبقية: 100%</span></div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-slate-400 font-bold block">إجمالي أرباح الشركاء الحالية</span><strong id="prt-kpi-dues" class="text-2xl font-black text-emerald-600 mt-1.5 block">0 ج.م</strong><span class="text-[11px] text-slate-500 font-bold mt-2 block">المتبقي غير المصروف حالياً</span></div>
+                    <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm"><span class="text-amber-400 font-extrabold block">صافي حصة المالك الأساسي بعد الشركاء</span><strong id="prt-kpi-owner-net" class="text-2xl font-black text-white mt-1.5 block">0 ج.م</strong><span class="text-[11px] text-slate-300 font-bold mt-2 block">الصافي المتبقي للإدارة</span></div>
                 </div>
 
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
@@ -537,7 +518,7 @@
                     <div class="bg-white p-5 rounded-2xl border shadow-sm"><span class="text-xs font-extrabold text-blue-700 block">3. النقدية الفعلية بالخزنة</span><div id="tr-safe-balance" class="text-2xl font-black text-slate-900 mt-2">0 ج.م</div></div>
                     <div class="bg-white p-5 rounded-2xl border shadow-sm"><span class="text-xs font-extrabold text-purple-700 block">4. فلوس التجار (لم تورد بعد)</span><div id="tr-merchants-money" class="text-xl font-black text-purple-700 mt-2">0 ج.م</div></div>
                     <div class="bg-white p-5 rounded-2xl border shadow-sm"><span class="text-xs font-extrabold text-cyan-700 block">5. فلوس المناديب (عهدة جارية)</span><div id="tr-couriers-money" class="text-xl font-black text-cyan-700 mt-2">0 ج.م</div></div>
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm"><span class="text-xs font-extrabold text-rose-700 block">6. إجمالي المبالغ المنصرفة (توريدات + مسحوبات + مصروفات)</span><div id="tr-total-out" class="text-xl font-black text-rose-600 mt-2">0 ج.م</div></div>
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm"><span class="text-xs font-extrabold text-rose-700 block">6. إجمالي المبالغ المنصرفة</span><div id="tr-total-out" class="text-xl font-black text-rose-600 mt-2">0 ج.م</div></div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-2xl border p-4 sm:p-5 shadow-sm space-y-4">
@@ -601,7 +582,7 @@
                 </div>
             </div>
 
-            <!-- ================= الصفحة 10: مركز ربط E-Gateway و Shopify و EasyOrder و WooCommerce (كامل) ================= -->
+            <!-- ================= الصفحة 10: مركز ربط E-Gateway و Shopify و EasyOrder و WooCommerce ================= -->
             <div id="tab-shopify" class="tab-pane space-y-5">
                 <div class="egateway-grad text-white p-5 sm:p-6 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
@@ -619,7 +600,6 @@
                     </div>
                 </div>
 
-                <!-- بطاقات المنصات الأربعة -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                     <button onclick="selectAdminWebhookPlatform('egateway')" class="text-right bg-white p-4 rounded-2xl border-2 border-cyan-500 shadow-sm hover:shadow transition space-y-1">
                         <div class="flex justify-between items-center"><strong class="text-sm text-cyan-900">E-Gateway</strong><span class="text-[10px] px-2 py-0.5 bg-cyan-100 text-cyan-800 rounded-full font-black">مباشر ⚡</span></div>
@@ -670,17 +650,19 @@
                 </div>
             </div>
 
-            <!-- ================= الصفحة 11: الملف الشخصي للشركة + رقم الواتساب + الهوية البصرية والألوان (كامل) ================= -->
+            <!-- ================= الصفحة 11: ملف الشركة الرسمي + الحفظ الفعلي في Google Sheets ================= -->
             <div id="tab-settings" class="tab-pane space-y-5">
                 <div class="bg-gradient-to-l from-slate-900 via-zinc-900 to-red-950 text-white p-5 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <h2 class="text-lg sm:text-xl font-black"><i class="fa-solid fa-building-shield text-amber-400 ml-1"></i> ملف الشركة الرسمي، رقم الواتساب، واستوديو الهوية البصرية</h2>
-                        <p class="text-xs text-slate-300 mt-1">تحكم في بيانات الشركة، رقم واتساب استقبال الرسائل وطلبات التوريد، الشعار، والألوان</p>
+                        <p class="text-xs text-slate-300 mt-1">كل تعديل هنا يُحفظ فعلياً في شيت <strong>1_Core_DB (إعدادات_الشركة)</strong> ليظهر تلقائياً عند كل التجار والمناديب والشركاء على أي جهاز</p>
                     </div>
-                    <button onclick="saveCompanyProfileSettings()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs shadow-lg flex items-center gap-2 transition">
-                        <i class="fa-solid fa-floppy-disk"></i> حفظ كافة بيانات وإعدادات الشركة
+                    <button id="btn-save-settings-top" onclick="saveCompanyProfileSettings()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs shadow-lg flex items-center gap-2 transition">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> <span>حفظ في Google Sheets الآن</span>
                     </button>
                 </div>
+
+                <div id="settings-save-banner" class="hidden p-3.5 rounded-2xl text-xs font-extrabold items-center justify-between gap-2"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
                     <!-- القسم الأول: بيانات الشركة ورقم الواتساب الرسمي -->
@@ -690,24 +672,27 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">اسم شركة الشحن الرسمي *</label>
-                                <input id="input-company-name" type="text" value="JET" oninput="updateBrandName(this.value)" class="w-full p-2.5 border rounded-xl font-black bg-slate-50 focus:bg-white">
+                                <input id="input-company-name" type="text" value="JET" oninput="previewBrandName(this.value)" class="w-full p-2.5 border rounded-xl font-black bg-slate-50 focus:bg-white">
                             </div>
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">الوصف / الشعار النصي (Tagline)</label>
-                                <input id="input-company-tagline" type="text" value="جيت للشحن والخدمات اللوجستية" oninput="updateBrandTagline(this.value)" class="w-full p-2.5 border rounded-xl font-bold bg-slate-50 focus:bg-white">
+                                <input id="input-company-tagline" type="text" value="جيت للشحن والخدمات اللوجستية" oninput="previewBrandTagline(this.value)" class="w-full p-2.5 border rounded-xl font-bold bg-slate-50 focus:bg-white">
                             </div>
                         </div>
 
-                        <div class="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 space-y-1.5">
-                            <label class="font-black text-emerald-900 block"><i class="fa-brands fa-whatsapp text-emerald-600 ml-1 text-sm"></i> رقم واتساب الشركة الرسمي (لاستقبال الرسائل وطلبات السحب والتوريد) *</label>
-                            <input id="input-company-whatsapp" type="tel" placeholder="مثال: 2010xxxxxxxx (بكود الدولة بدون +)" class="w-full p-2.5 border border-emerald-300 rounded-xl font-mono font-black text-emerald-950 bg-white">
-                            <span class="text-[10px] text-emerald-800 font-bold block">يُستخدم هذا الرقم تلقائياً لاستقبال طلبات سحب الشركاء وتوريد التجار ورسائل الدعم.</span>
+                        <div class="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <label class="font-black text-emerald-900"><i class="fa-brands fa-whatsapp text-emerald-600 ml-1 text-sm"></i> رقم واتساب الشركة الرسمي *</label>
+                                <button type="button" onclick="testCompanyWhatsAppNow()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-black shadow-xs"><i class="fa-brands fa-whatsapp ml-1"></i>تجربة فتح الرقم الآن</button>
+                            </div>
+                            <input id="input-company-whatsapp" type="tel" placeholder="مثال: 01140901494 أو 201140901494" class="w-full p-2.5 border border-emerald-300 rounded-xl font-mono font-black text-emerald-950 bg-white">
+                            <span class="text-[10px] text-emerald-800 font-bold block">يُحفظ في شيت Google Sheets ليفتح محادثتك مباشرة عند أي تاجر أو مندوب أو شريك يضغط تواصل أو طلب سحب/توريد.</span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">رقم هاتف خدمة العملاء / الفرع</label>
-                                <input id="input-company-phone" type="tel" placeholder="01000000000" class="w-full p-2.5 border rounded-xl font-mono font-bold bg-slate-50 focus:bg-white">
+                                <input id="input-company-phone" type="tel" placeholder="01126389850" class="w-full p-2.5 border rounded-xl font-mono font-bold bg-slate-50 focus:bg-white">
                             </div>
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">عنوان المقر الرئيسي للشركة</label>
@@ -717,19 +702,21 @@
 
                         <div>
                             <label class="font-bold text-slate-700 block mb-1">ملاحظة / شروط أسفل الفواتير المطبوعة (AWB Footer)</label>
-                            <input id="input-invoice-footer" type="text" placeholder="مثال: شكراً لاختياركم JET Shipping & Logistics — خدمة العملاء متاحة يومياً" class="w-full p-2.5 border rounded-xl font-bold bg-slate-50 focus:bg-white">
+                            <input id="input-invoice-footer" type="text" placeholder="مثال: شكراً لاختياركم JET Shipping & Logistics" class="w-full p-2.5 border rounded-xl font-bold bg-slate-50 focus:bg-white">
                         </div>
 
-                        <button onclick="saveCompanyProfileSettings()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl font-black shadow">حفظ بيانات الشركة ورقم الواتساب الآن</button>
+                        <button id="btn-save-settings-form" onclick="saveCompanyProfileSettings()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl font-black shadow flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span>حفظ بيانات الشركة ورقم الواتساب في الشيت الآن</span>
+                        </button>
                     </div>
 
-                    <!-- القسم الثاني: اللوجو والألوان والهوية البصرية (White-Label SaaS) -->
+                    <!-- القسم الثاني: اللوجو والألوان والهوية البصرية -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <h3 class="font-black text-sm text-slate-900 border-b pb-2.5"><i class="fa-solid fa-palette text-brand ml-1"></i> استوديو تخصيص اللوجو والألوان والهوية البصرية</h3>
 
                         <div class="p-3.5 bg-slate-50 rounded-2xl border space-y-3">
                             <div class="flex items-center justify-between">
-                                <label class="font-bold text-slate-700">رفع صورة لوجو الشركة (تُثبّت في السايدبار والفواتير):</label>
+                                <label class="font-bold text-slate-700">رفع صورة لوجو الشركة (تُضغط وتُحفظ في الشيت وتظهر على كل الأجهزة):</label>
                                 <button onclick="resetToDefaultJetLogo()" class="text-[11px] font-black text-brand underline">استعادة شعار JET الأصلي</button>
                             </div>
                             <input type="file" accept="image/*" onchange="uploadLogoFile(event)" class="w-full text-xs bg-white p-2 border rounded-xl cursor-pointer">
@@ -788,10 +775,8 @@
             FIN_DB:  "https://script.google.com/macros/s/AKfycbzfXkrG5LJlMlCDtDPu4DDlSHyXMnQTksLYZA7Mq78Hu-XHBIJk3MAst2pdRf0jUhkNbg/exec"
         };
 
-        const MASTER_ADMIN_PASS = "150150";
         const ALL_STATUSES = ["جديد", "قيد التأكيد", "جاهز للشحن", "تم الشحن مع المندوب", "تم التسليم", "تم التسليم جزئي", "مؤجل", "تم الإلغاء", "مرتجع وتم دفع الشحن", "مرتجع ولم يدفع الشحن"];
 
-        // شعار JET الأصلي المتجهي المطابق للأصل
         const EXACT_JET_SVG_LOGO = `<svg viewBox="0 0 1000 1000" class="w-full h-full object-contain" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="jetWingDarkA" x1="190" y1="405" x2="808" y2="148" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b3f46"/><stop offset="100%" stop-color="#22252a"/></linearGradient>
@@ -806,12 +791,28 @@
             <path d="M 808 148 L 468 548 L 526 534 C 505 640, 478 676, 425 676 L 358 676 L 368 622 L 265 730 L 395 730 C 495 730, 555 670, 585 565 L 658 325 L 808 148 Z" fill="url(#jetRedMainA)"/>
         </svg>`;
 
+        // تنسيق ذكي لأي رقم واتساب مصري أو دولي لمنع تكرار كود الدولة (2) أو فتح قائمة جهات اتصال فارغة
+        function formatWhatsAppNumber(raw) {
+            let digits = String(raw || '').replace(/\D/g, '');
+            if (!digits) return '';
+            if (digits.startsWith('00')) digits = digits.slice(2);
+            if (digits.startsWith('0') && digits.length === 11) digits = '2' + digits;
+            else if (digits.startsWith('1') && digits.length === 10) digits = '20' + digits;
+            return digits;
+        }
+
+        function buildWhatsAppLink(phone, text = '') {
+            const clean = formatWhatsAppNumber(phone);
+            if (!clean) return 'javascript:alert("لا يوجد رقم واتساب مسجل لهذا الحساب")';
+            return text ? `https://wa.me/${clean}?text=${encodeURIComponent(text)}` : `https://wa.me/${clean}`;
+        }
+
         let customEGatewayLogoDataUrl = localStorage.getItem('swift_egateway_logo') || '';
         let companyProfile = JSON.parse(localStorage.getItem('jet_company_profile') || 'null') || {
             name: localStorage.getItem('jet_company_name') || 'JET',
             tagline: 'جيت للشحن والخدمات اللوجستية',
-            whatsapp: '201000000000',
-            phone: '01000000000',
+            whatsapp: '201140901494',
+            phone: '01126389850',
             address: 'القاهرة - جمهورية مصر العربية',
             invoiceFooter: 'شكراً لاختياركم JET Shipping & Logistics — خدمة العملاء متاحة يومياً',
             primaryColor: '#c8102e',
@@ -819,7 +820,8 @@
             lightColor: '#fef2f2',
             sidebarBg: '#0f172a',
             logoMode: 'svg',
-            logoIcon: 'fa-truck-fast'
+            logoIcon: 'fa-truck-fast',
+            logoDataUrl: localStorage.getItem('jet_permanent_logo_base64') || ''
         };
 
         let isInitialCloudLoaded = false;
@@ -838,27 +840,18 @@
         }
 
         function getCompanyLogoMarkup(sizeClass = "w-10 h-10") {
-            const savedImg = localStorage.getItem('jet_permanent_logo_base64') || '';
-            if (companyProfile.logoMode === 'image' && savedImg) {
-                return `<img src="${savedImg}" class="${sizeClass} object-contain" alt="${companyProfile.name}">`;
-            }
-            if (companyProfile.logoMode === 'icon') {
-                return `<div class="${sizeClass} rounded-xl bg-brand text-white flex items-center justify-center text-lg"><i class="fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'}"></i></div>`;
-            }
-            if (savedImg && companyProfile.logoMode !== 'svg') {
-                return `<img src="${savedImg}" class="${sizeClass} object-contain" alt="${companyProfile.name}">`;
-            }
+            const savedImg = companyProfile.logoDataUrl || localStorage.getItem('jet_permanent_logo_base64') || '';
+            if (companyProfile.logoMode === 'image' && savedImg) return `<img src="${savedImg}" class="${sizeClass} object-contain" alt="${companyProfile.name}">`;
+            if (companyProfile.logoMode === 'icon') return `<div class="${sizeClass} rounded-xl bg-brand text-white flex items-center justify-center text-lg"><i class="fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'}"></i></div>`;
             return `<div class="${sizeClass} flex items-center justify-center">${EXACT_JET_SVG_LOGO}</div>`;
         }
 
         function refreshAllBrandVisuals() {
-            // تطبيق الألوان المحفوظة
             document.documentElement.style.setProperty('--brand-primary', companyProfile.primaryColor || '#c8102e');
             document.documentElement.style.setProperty('--brand-hover', companyProfile.hoverColor || '#9e0b22');
             document.documentElement.style.setProperty('--brand-light', companyProfile.lightColor || '#fef2f2');
             document.documentElement.style.setProperty('--sidebar-bg', companyProfile.sidebarBg || '#0f172a');
 
-            // تطبيق الاسم والوصف
             const bName = companyProfile.name || 'JET';
             const bTag = companyProfile.tagline || 'جيت للشحن والخدمات اللوجستية';
             if (document.getElementById('company-name-display')) document.getElementById('company-name-display').innerText = bName;
@@ -867,7 +860,6 @@
             document.querySelectorAll('.brand-name-span').forEach(e => e.innerText = bName);
             document.title = `${bName} - لوحة الإدارة العليا الشاملة`;
 
-            // تعبئة حقول صفحة ملف الشركة والإعدادات
             if (document.getElementById('input-company-name')) document.getElementById('input-company-name').value = bName;
             if (document.getElementById('input-company-tagline')) document.getElementById('input-company-tagline').value = bTag;
             if (document.getElementById('input-company-whatsapp')) document.getElementById('input-company-whatsapp').value = companyProfile.whatsapp || '';
@@ -876,8 +868,7 @@
             if (document.getElementById('input-invoice-footer')) document.getElementById('input-invoice-footer').value = companyProfile.invoiceFooter || '';
             if (document.getElementById('input-custom-color')) document.getElementById('input-custom-color').value = companyProfile.primaryColor || '#c8102e';
 
-            // تطبيق الشعار في السايدبار وشاشة التحميل
-            const savedImg = localStorage.getItem('jet_permanent_logo_base64') || '';
+            const savedImg = companyProfile.logoDataUrl || localStorage.getItem('jet_permanent_logo_base64') || '';
             const sIcon = document.getElementById('sidebar-logo-icon');
             const sImg = document.getElementById('sidebar-logo-img');
             const sSvg = document.getElementById('sidebar-logo-svg');
@@ -885,40 +876,24 @@
 
             if (sIcon && sImg && sSvg) {
                 sIcon.classList.add('hidden'); sImg.classList.add('hidden'); sSvg.classList.add('hidden');
-                if (companyProfile.logoMode === 'image' && savedImg) {
-                    sImg.src = savedImg; sImg.classList.remove('hidden');
-                } else if (companyProfile.logoMode === 'icon') {
-                    sIcon.className = `fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'} text-brand text-xl`;
-                    sIcon.classList.remove('hidden');
-                } else {
-                    sSvg.innerHTML = EXACT_JET_SVG_LOGO;
-                    sSvg.classList.remove('hidden');
-                }
+                if (companyProfile.logoMode === 'image' && savedImg) { sImg.src = savedImg; sImg.classList.remove('hidden'); }
+                else if (companyProfile.logoMode === 'icon') { sIcon.className = `fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'} text-brand text-xl`; sIcon.classList.remove('hidden'); }
+                else { sSvg.innerHTML = EXACT_JET_SVG_LOGO; sSvg.classList.remove('hidden'); }
             }
-            if (preSlot) {
-                preSlot.innerHTML = (companyProfile.logoMode === 'image' && savedImg)
-                    ? `<img src="${savedImg}" class="w-full h-full object-contain" alt="JET">`
-                    : EXACT_JET_SVG_LOGO;
-            }
+            if (preSlot) preSlot.innerHTML = (companyProfile.logoMode === 'image' && savedImg) ? `<img src="${savedImg}" class="w-full h-full object-contain" alt="JET">` : EXACT_JET_SVG_LOGO;
 
-            // شعارات E-Gateway
-            const hSlot = document.getElementById('header-egw-logo-slot');
-            if (hSlot) hSlot.innerHTML = getEGatewayLogoHTML('w-4 h-4');
-            const kSlot = document.getElementById('kpi-egw-logo-slot');
-            if (kSlot) kSlot.innerHTML = getEGatewayLogoHTML('w-8 h-8');
-            const hubSlot = document.getElementById('hub-egw-logo-slot');
-            if (hubSlot) hubSlot.innerHTML = getEGatewayLogoHTML('w-12 h-12');
+            if (document.getElementById('header-egw-logo-slot')) document.getElementById('header-egw-logo-slot').innerHTML = getEGatewayLogoHTML('w-4 h-4');
+            if (document.getElementById('kpi-egw-logo-slot')) document.getElementById('kpi-egw-logo-slot').innerHTML = getEGatewayLogoHTML('w-8 h-8');
+            if (document.getElementById('hub-egw-logo-slot')) document.getElementById('hub-egw-logo-slot').innerHTML = getEGatewayLogoHTML('w-12 h-12');
         }
 
         function uploadEGatewayLogoFile(event) {
-            const f = event.target.files[0];
-            if (!f) return;
+            const f = event.target.files[0]; if (!f) return;
             const r = new FileReader();
             r.onload = e => {
                 customEGatewayLogoDataUrl = e.target.result;
                 localStorage.setItem('swift_egateway_logo', customEGatewayLogoDataUrl);
-                refreshAllBrandVisuals();
-                renderOrders();
+                refreshAllBrandVisuals(); renderOrders();
                 alert('✅ تم حفظ وتعميم شعار E-Gateway الجديد بنجاح!');
             };
             r.readAsDataURL(f);
@@ -938,14 +913,8 @@
             { code: 'ZN-06', name: 'محافظات الصعيد', sector: 'شمال ووسط الصعيد', fee: 85, comm: 30, remoteFee: 25, extraKg: 15, sla: '48 إلى 72 ساعة' }
         ];
 
-        const merchantsData = [
-            { code: 'MER-101', store: 'تاجر تجريبي', owner: 'حساب تجريبي', phone: '01000000000', user: 'test_mer', pass: '123456', discount: 0, shopify: true, egateway: true }
-        ];
-
-        const couriersData = [
-            { id: 'CR-01', name: 'مندوب تجريبي', phone: '01011112222', user: 'test_cr', pass: '123456', zone: 'القاهرة الكبرى', comm: 20 }
-        ];
-
+        const merchantsData = [];
+        const couriersData = [];
         let partnersData = JSON.parse(localStorage.getItem('jet_partners_data') || '[]');
         const warehouseData = [];
         const ordersData = [];
@@ -956,7 +925,7 @@
         let currentPreviewAwbIdx = 0, activeMerchantSheetStore = '', activeCourierDetailsName = '', camScannedList = [];
 
         // =========================================================================
-        // المحرك الذكي لتحليل وتنظيف اسم المنتج واستخراج الصنف الأساسي للمخزن والعدد الصحيح
+        // المحرك الذكي لتحليل وتنظيف اسم المنتج واستخراج الصنف الأساسي للمخزن
         // =========================================================================
         function extractBaseProductName(offerTitle) {
             let s = String(offerTitle || '').trim();
@@ -964,14 +933,11 @@
             s = s.replace(/^(قطعتين|ثلاث|تلات|اربع|أربع|خمس|ست|سبع|ثمان|تسع|عشر)\s*(قطع|قطعه|قطعة)?\s*(من)?\s*/i, '');
             s = s.replace(/^\d+\s*(قطع|قطعه|قطعة|عبوة|عبوه)?\s*(من)?\s*/i, '');
             s = s.replace(/^(شنطة|شنطه)\b/i, 'شنط');
-            s = s.replace(/\s+/g, ' ').trim();
-            return s || String(offerTitle || '').trim();
+            return s.replace(/\s+/g, ' ').trim() || String(offerTitle || '').trim();
         }
 
         function analyzeOrderItemsSmart(rawText) {
-            if (!rawText) {
-                return { cleanDisplay: 'طرد شحن', totalPieces: 1, baseSummaryText: 'طرد شحن (1 قطعة)', baseGroups: {}, offerLines: ['طرد شحن'] };
-            }
+            if (!rawText) return { cleanDisplay: 'طرد شحن', totalPieces: 1, baseSummaryText: 'طرد شحن (1 قطعة)', baseGroups: {}, offerLines: ['طرد شحن'] };
             const segments = String(rawText).split('+').map(s => s.trim()).filter(Boolean);
             let totalPieces = 0;
             const cleanDisplayParts = [], offerLines = [], baseGroups = {};
@@ -981,25 +947,13 @@
                 let cartMult = 1, coreName = seg;
                 const suffixMatch = seg.match(/\s*-\s*عرض\s*(\d+)\s*(قطع|قطعه|قطعة|عبوة|عبوه)?\s*$/i);
                 if (suffixMatch) { cartMult = parseInt(suffixMatch[1]) || 1; coreName = seg.slice(0, suffixMatch.index).trim(); }
-
                 let bundleQty = 0;
                 const numMatch = coreName.match(/(\d+)/);
                 if (numMatch) bundleQty = parseInt(numMatch[1]) || 0;
-                else {
-                    for (const [word, num] of Object.entries(arabicNums)) {
-                        if (coreName.includes(word)) { bundleQty = num; break; }
-                    }
-                }
+                else { for (const [word, num] of Object.entries(arabicNums)) { if (coreName.includes(word)) { bundleQty = num; break; } } }
 
-                let segPieces = 1, cleanSegText = coreName;
-                if (bundleQty > 0) {
-                    segPieces = bundleQty * cartMult;
-                    cleanSegText = cartMult > 1 ? `${coreName} (×${cartMult})` : coreName;
-                } else {
-                    segPieces = cartMult;
-                    cleanSegText = cartMult > 1 ? `${coreName} (${cartMult} قطع)` : coreName;
-                }
-
+                const segPieces = bundleQty > 0 ? bundleQty * cartMult : cartMult;
+                const cleanSegText = bundleQty > 0 ? (cartMult > 1 ? `${coreName} (×${cartMult})` : coreName) : (cartMult > 1 ? `${coreName} (${cartMult} قطع)` : coreName);
                 totalPieces += segPieces;
                 cleanDisplayParts.push(cleanSegText);
                 const baseProd = extractBaseProductName(coreName);
@@ -1015,8 +969,8 @@
             return String(str || '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/شنطه/g, 'شنط').replace(/\s+/g, ' ').trim().toLowerCase();
         }
 
-        function isSameMerchantStore(orderMerchant, merchantStore) {
-            return String(orderMerchant || '').trim().toLowerCase() === String(merchantStore || '').trim().toLowerCase();
+        function isSameMerchantStore(a, b) {
+            return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
         }
 
         function syncWarehouseStockForOrder(order, newStatus) {
@@ -1086,7 +1040,7 @@
         }
 
         // =========================================================================
-        // المزامنة السحابية مع شيتات JET الثلاثة
+        // المزامنة السحابية الحقيقية مع شيتات JET الثلاثة (بما فيها إعدادات الشركة)
         // =========================================================================
         async function pullAllFromGoogleSheets(manualRefresh = false) {
             if (manualRefresh) setSyncStatus('saving', '⏳ جاري جلب أحدث البيانات من شيتات JET...');
@@ -1107,46 +1061,34 @@
 
                 if (coreRes && coreRes.status === 'success') {
                     connected = true;
+                    // جلب إعدادات الشركة ورقم الواتساب من الشيت إذا كانت محفوظة
+                    if (coreRes.settings && typeof coreRes.settings === 'object' && Object.keys(coreRes.settings).length > 0) {
+                        companyProfile = { ...companyProfile, ...coreRes.settings };
+                        if (companyProfile.logoDataUrl) localStorage.setItem('jet_permanent_logo_base64', companyProfile.logoDataUrl);
+                        localStorage.setItem('jet_company_name', companyProfile.name || 'JET');
+                        localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
+                    }
                     if (Array.isArray(coreRes.merchants)) {
                         const cleanMer = coreRes.merchants.filter(m => m.store).map(m => ({
-                            ...m,
-                            code: String(m.code || 'MER-101').trim(),
-                            store: String(m.store || '').trim(),
-                            owner: String(m.owner || '').trim(),
-                            phone: String(m.phone || '').trim(),
-                            user: String(m.user || '').trim(),
-                            pass: String(m.pass !== undefined && m.pass !== '' ? m.pass : '123456').trim(),
-                            discount: parseFloat(m.discount) || 0,
-                            shopify: m.shopify === true || m.shopify === 'TRUE' || m.shopify === 'true',
-                            egateway: true
+                            ...m, code: String(m.code || 'MER-101').trim(), store: String(m.store || '').trim(), owner: String(m.owner || '').trim(),
+                            phone: String(m.phone || '').trim(), user: String(m.user || '').trim(), pass: String(m.pass !== undefined && m.pass !== '' ? m.pass : '123456').trim(),
+                            discount: parseFloat(m.discount) || 0, shopify: m.shopify === true || m.shopify === 'TRUE' || m.shopify === 'true', egateway: true
                         }));
-                        // استبدال القائمة بالكامل حتى لو أصبحت فارغة بعد حذف الحسابات التجريبية
                         merchantsData.splice(0, merchantsData.length, ...cleanMer);
                     }
                     if (Array.isArray(coreRes.couriers)) {
                         const cleanCour = coreRes.couriers.filter(c => c.name).map(c => ({
-                            ...c,
-                            id: String(c.id || 'CR-01').trim(),
-                            name: String(c.name || '').trim(),
-                            phone: String(c.phone || '').trim(),
-                            user: String(c.user || '').trim(),
-                            pass: String(c.pass !== undefined && c.pass !== '' ? c.pass : '123456').trim(),
-                            zone: String(c.zone || '').trim(),
-                            comm: parseFloat(c.comm) || 20
+                            ...c, id: String(c.id || 'CR-01').trim(), name: String(c.name || '').trim(), phone: String(c.phone || '').trim(),
+                            user: String(c.user || '').trim(), pass: String(c.pass !== undefined && c.pass !== '' ? c.pass : '123456').trim(),
+                            zone: String(c.zone || '').trim(), comm: parseFloat(c.comm) || 20
                         }));
                         couriersData.splice(0, couriersData.length, ...cleanCour);
                     }
                     if (Array.isArray(coreRes.partners)) {
                         partnersData = coreRes.partners.filter(p => p.name).map(p => ({
-                            ...p,
-                            id: String(p.id || 'PRT-01').trim(),
-                            name: String(p.name || '').trim(),
-                            roleTitle: String(p.roleTitle || 'شريك بنسبة في الأرباح').trim(),
-                            phone: String(p.phone || '').trim(),
-                            user: String(p.user || '').trim(),
-                            pass: String(p.pass !== undefined && p.pass !== '' ? p.pass : '123456').trim(),
-                            percent: parseFloat(p.percent) || 0,
-                            paidTotal: parseFloat(p.paidTotal) || 0
+                            ...p, id: String(p.id || 'PRT-01').trim(), name: String(p.name || '').trim(), roleTitle: String(p.roleTitle || 'شريك بنسبة في الأرباح').trim(),
+                            phone: String(p.phone || '').trim(), user: String(p.user || '').trim(), pass: String(p.pass !== undefined && p.pass !== '' ? p.pass : '123456').trim(),
+                            percent: parseFloat(p.percent) || 0, paidTotal: parseFloat(p.paidTotal) || 0
                         }));
                         localStorage.setItem('jet_partners_data', JSON.stringify(partnersData));
                     }
@@ -1174,12 +1116,8 @@
                         withdrawnProfitsTotal = parseFloat(finRes.summary.withdrawnProfitsTotal) || 0;
                         settledMerchantsPayouts = parseFloat(finRes.summary.settledMerchantsPayouts) || 0;
                     }
-                    if (Array.isArray(finRes.expenses)) {
-                        expensesData.splice(0, expensesData.length, ...finRes.expenses.filter(e => e.title).map(e => ({ ...e, amount: parseFloat(e.amount) || 0 })));
-                    }
-                    if (Array.isArray(finRes.treasuryLogs)) {
-                        treasuryLogs.splice(0, treasuryLogs.length, ...finRes.treasuryLogs.filter(l => l.text).map(l => ({ ...l, amount: parseFloat(l.amount) || 0 })));
-                    }
+                    if (Array.isArray(finRes.expenses)) expensesData.splice(0, expensesData.length, ...finRes.expenses.filter(e => e.title).map(e => ({ ...e, amount: parseFloat(e.amount) || 0 })));
+                    if (Array.isArray(finRes.treasuryLogs)) treasuryLogs.splice(0, treasuryLogs.length, ...finRes.treasuryLogs.filter(l => l.text).map(l => ({ ...l, amount: parseFloat(l.amount) || 0 })));
                 }
 
                 if (connected) setSyncStatus('ok', `✅ متصل بشيتات JET (${ordersData.length} شحنة) ✓`);
@@ -1199,15 +1137,15 @@
             const egwOrders = ordersData.filter(o => ['E-Gateway', 'Shopify', 'EasyOrder', 'WooCommerce'].includes(o.source));
             const toast = document.getElementById('shopify-toast');
             document.getElementById('toast-icon-box').innerHTML = getEGatewayLogoHTML('w-8 h-8');
-            document.getElementById('shopify-toast-title').innerText = `تم تحديث ومزامنة شحنات JET من Google Sheets بنجاح!`;
+            document.getElementById('shopify-toast-title').innerText = `تم تحديث ومزامنة شحنات ${companyProfile.name} من Google Sheets بنجاح!`;
             document.getElementById('shopify-toast-text').innerText = `إجمالي الشحنات الفعلية بالشيت الآن: (${ordersData.length}) شحنة — منها (${egwOrders.length}) شحنة من المتاجر المربوطة.`;
             toast.classList.remove('hidden'); toast.classList.add('flex');
         }
 
         async function pushToCoreDB() {
             localStorage.setItem('jet_partners_data', JSON.stringify(partnersData));
-            if (!isInitialCloudLoaded) return;
-            setSyncStatus('saving', '⏳ جاري الحفظ الفعلي في شيت JET (Core_DB)...');
+            if (!isInitialCloudLoaded) return false;
+            setSyncStatus('saving', '⏳ جاري الحفظ الفعلي في شيت الحسابات والإعدادات (Core_DB)...');
             try {
                 const res = await fetch(PRIME_CLOUD_URLS.CORE_DB, {
                     method: 'POST',
@@ -1218,14 +1156,17 @@
                         couriers: couriersData,
                         partners: partnersData,
                         zones: zonesData,
-                        warehouse: warehouseData
+                        warehouse: warehouseData,
+                        settings: companyProfile
                     })
                 });
                 const result = await res.json();
                 if (!result || result.status !== 'success') throw new Error(result?.message || 'رفض الشيت عملية الحفظ');
-                setSyncStatus('ok', '✅ تم الحفظ الفعلي في شيت الحسابات ✓');
+                setSyncStatus('ok', '✅ تم الحفظ الفعلي في الشيت الأول ✓');
+                return true;
             } catch (e) {
                 setSyncStatus('error', '❌ فشل الحفظ في الشيت الأول!');
+                return false;
             }
         }
 
@@ -1426,9 +1367,7 @@
                     <div class="modal-body-scroll p-4 space-y-4">
                         <div class="bg-slate-950 rounded-2xl p-3 text-center border-2 border-amber-400 overflow-hidden">
                             <div id="qr-reader-mount" class="w-full rounded-xl overflow-hidden bg-black min-h-[180px] flex items-center justify-center text-slate-400 font-bold">اضغط على "تشغيل الكاميرا الآن" بالأسفل لبدء المسح الفعلي</div>
-                            <div class="flex flex-wrap justify-center gap-2 pt-3">
-                                <button onclick="startRealCamera()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-black shadow flex items-center gap-1.5"><i class="fa-solid fa-video"></i> تشغيل الكاميرا الآن</button>
-                            </div>
+                            <div class="flex flex-wrap justify-center gap-2 pt-3"><button onclick="startRealCamera()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-black shadow flex items-center gap-1.5"><i class="fa-solid fa-video"></i> تشغيل الكاميرا الآن</button></div>
                         </div>
                         <div class="flex gap-2">
                             <input id="cam-manual-awb-input" type="text" onkeydown="if(event.key==='Enter') addManualAwbToCamList()" placeholder="اكتب رقم البوليصة واضغط Enter..." class="flex-1 p-2.5 border rounded-xl font-bold outline-none focus:border-red-600">
@@ -1449,33 +1388,18 @@
 
             <div id="modal-partner" onclick="handleBackdropClick(event, 'modal-partner')" class="modal-backdrop fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-3 sm:p-4 z-50">
                 <div class="modal-card bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden text-xs">
-                    <div class="p-4 border-b bg-slate-900 text-white flex justify-between items-center">
-                        <h3 id="modal-prt-title" class="font-extrabold text-sm sm:text-base"><i class="fa-solid fa-handshake text-amber-400 ml-1"></i> إنشاء / تعديل أكونت شريك ونسبة الأرباح</h3>
-                        <button onclick="closeModal('modal-partner')" class="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
+                    <div class="p-4 border-b bg-slate-900 text-white flex justify-between items-center"><h3 id="modal-prt-title" class="font-extrabold text-sm sm:text-base"><i class="fa-solid fa-handshake text-amber-400 ml-1"></i> إنشاء / تعديل أكونت شريك ونسبة الأرباح</h3><button onclick="closeModal('modal-partner')" class="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button></div>
                     <input type="hidden" id="prt-edit-idx" value="-1">
                     <div class="modal-body-scroll p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div><label class="font-bold text-slate-700 block mb-1">اسم الشريك بالكامل *</label><input id="prt-name" type="text" placeholder="مثال: محمد علي" class="w-full p-2.5 border rounded-xl font-bold"></div>
                         <div><label class="font-bold text-slate-700 block mb-1">المسمى / الصفة</label><input id="prt-role" type="text" value="شريك بنسبة في الأرباح" class="w-full p-2.5 border rounded-xl"></div>
                         <div><label class="font-bold text-slate-700 block mb-1">رقم الموبايل / واتساب *</label><input id="prt-phone" type="text" placeholder="01xxxxxxxxx" class="w-full p-2.5 border rounded-xl font-mono"></div>
-                        <div class="bg-red-50 p-2.5 rounded-xl border border-red-200">
-                            <label class="font-black text-red-900 block mb-1">نسبة الشريك من الأرباح (%) *</label>
-                            <div class="flex items-center gap-1.5">
-                                <input id="prt-percent" type="number" min="0.5" max="100" step="0.5" value="20" class="w-full p-2 border border-red-300 rounded-lg font-black text-red-700 text-center text-sm bg-white">
-                                <span class="font-black text-red-900 text-sm">%</span>
-                            </div>
-                        </div>
-                        <div><label class="font-bold text-slate-700 block mb-1">اسم المستخدم للدخول (Account) *</label><input id="prt-user" type="text" placeholder="partner1" class="w-full p-2.5 border rounded-xl font-mono"></div>
-                        <div><label class="font-bold text-slate-700 block mb-1">كلمة المرور (Password) *</label><input id="prt-pass" type="text" value="123456" class="w-full p-2.5 border rounded-xl font-mono"></div>
-                        <div class="sm:col-span-2">
-                            <label class="font-bold text-slate-700 block mb-1">إجمالي ما استلمه سابقاً (ج.م) — يمكنك تصفيره (0) لإعادة الحساب:</label>
-                            <input id="prt-paid-total" type="number" value="0" class="w-full p-2.5 border rounded-xl font-black text-blue-700 bg-slate-50">
-                        </div>
+                        <div class="bg-red-50 p-2.5 rounded-xl border border-red-200"><label class="font-black text-red-900 block mb-1">نسبة الشريك من الأرباح (%) *</label><div class="flex items-center gap-1.5"><input id="prt-percent" type="number" min="0.5" max="100" step="0.5" value="20" class="w-full p-2 border border-red-300 rounded-lg font-black text-red-700 text-center text-sm bg-white"><span class="font-black text-red-900 text-sm">%</span></div></div>
+                        <div><label class="font-bold text-slate-700 block mb-1">اسم المستخدم للدخول *</label><input id="prt-user" type="text" placeholder="partner1" class="w-full p-2.5 border rounded-xl font-mono"></div>
+                        <div><label class="font-bold text-slate-700 block mb-1">كلمة المرور *</label><input id="prt-pass" type="text" value="123456" class="w-full p-2.5 border rounded-xl font-mono"></div>
+                        <div class="sm:col-span-2"><label class="font-bold text-slate-700 block mb-1">إجمالي ما استلمه سابقاً (ج.م):</label><input id="prt-paid-total" type="number" value="0" class="w-full p-2.5 border rounded-xl font-black text-blue-700 bg-slate-50"></div>
                     </div>
-                    <div class="p-4 border-t bg-slate-50 flex justify-end gap-2">
-                        <button onclick="closeModal('modal-partner')" class="px-4 py-2 rounded-xl bg-slate-200 font-bold">إلغاء</button>
-                        <button onclick="savePartnerModal()" class="px-6 py-2 rounded-xl bg-brand hover-bg-brand text-white font-black shadow">حفظ أكونت الشريك ونسبته</button>
-                    </div>
+                    <div class="p-4 border-t bg-slate-50 flex justify-end gap-2"><button onclick="closeModal('modal-partner')" class="px-4 py-2 rounded-xl bg-slate-200 font-bold">إلغاء</button><button onclick="savePartnerModal()" class="px-6 py-2 rounded-xl bg-brand hover-bg-brand text-white font-black shadow">حفظ أكونت الشريك ونسبته</button></div>
                 </div>
             </div>
 
@@ -1588,7 +1512,7 @@
         }
 
         // =========================================================================
-        // المحرك المالي الموحد (مع تصفير نصيب الشريك فور الصرف)
+        // المحرك المالي الموحد
         // =========================================================================
         function calcOrderFinancials(o) {
             if (o.status === 'تم الإلغاء') return { totalCod: 0, effectiveFee: 0, netMerchant: 0, companyNet: 0 };
@@ -1626,9 +1550,7 @@
                 const entitled = Math.round((totalOperatingProfit * pct) / 100);
                 const paid = parseFloat(p.paidTotal) || 0;
                 const remNow = Math.max(0, entitled - paid);
-                totalPartnersEntitled += entitled;
-                totalPartnersPaid += paid;
-                totalPartnersRemainingNow += remNow;
+                totalPartnersEntitled += entitled; totalPartnersPaid += paid; totalPartnersRemainingNow += remNow;
             });
 
             const ownerTotalEntitled = Math.max(0, totalOperatingProfit - totalPartnersEntitled);
@@ -1639,7 +1561,7 @@
         }
 
         // =========================================================================
-        // 1. إدارة الشركاء (تحديد + حذف جماعي وفردي + تصفير فوري عند الصرف)
+        // 1. الشركاء
         // =========================================================================
         function renderPartners() {
             const finStats = getOperatingFinancials();
@@ -1657,21 +1579,15 @@
 
             const tbody = document.getElementById('partners-tbody');
             if (!tbody) return;
-
             if (partnersData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold">لا يوجد شركاء مسجلين حالياً (نسبة المالك الأساسي 100%) — اضغط على "+ إضافة شريك"</td></tr>`;
-                updateSelectedPartnersCount();
-                return;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold">لا يوجد شركاء مسجلين حالياً (نسبة المالك الأساسي 100%) — اضغط "+ إضافة شريك"</td></tr>`;
+                updateSelectedPartnersCount(); return;
             }
 
             tbody.innerHTML = partnersData.map((p, idx) => {
-                const pct = parseFloat(p.percent) || 0;
-                const totalEntitled = Math.round((finStats.totalOperatingProfit * pct) / 100);
-                const alreadyPaid = parseFloat(p.paidTotal) || 0;
-                const partnerShareNow = Math.max(0, totalEntitled - alreadyPaid);
-
-                return `
-                <tr class="hover:bg-slate-50 transition">
+                const pct = parseFloat(p.percent) || 0, totalEntitled = Math.round((finStats.totalOperatingProfit * pct) / 100), alreadyPaid = parseFloat(p.paidTotal) || 0, partnerShareNow = Math.max(0, totalEntitled - alreadyPaid);
+                const waLink = buildWhatsAppLink(p.phone, `مرحباً شريكنا العزيز ${p.name} في ${companyProfile.name}، نصيبك الحالي (${p.percent}%) هو: ${partnerShareNow} ج.م`);
+                return `<tr class="hover:bg-slate-50 transition">
                     <td class="p-3.5 text-center"><input type="checkbox" class="partner-row-cb w-4 h-4 rounded accent-red-600 cursor-pointer" data-idx="${idx}" onchange="updateSelectedPartnersCount()"></td>
                     <td class="p-3.5 font-mono font-black text-red-700">#${p.id}</td>
                     <td class="p-3.5"><div class="font-black text-slate-900 text-sm">${p.name}</div><div class="text-[11px] text-slate-400 font-bold">${p.roleTitle || 'شريك بالأرباح'}</div></td>
@@ -1679,20 +1595,17 @@
                     <td class="p-3.5"><div class="flex items-center gap-1"><input type="number" min="0.5" max="100" step="0.5" value="${p.percent}" onchange="updatePartnerPercentInline(${idx}, this.value)" class="w-16 p-1.5 border border-red-300 rounded-lg text-center font-black text-red-800 bg-red-50/50"><span class="font-black text-red-700">%</span></div></td>
                     <td class="p-3.5 font-black text-base ${partnerShareNow > 0 ? 'text-emerald-600' : 'text-slate-400'}">${partnerShareNow.toLocaleString()} ج.م</td>
                     <td class="p-3.5"><div class="flex items-center gap-1"><input type="number" min="0" value="${alreadyPaid}" onchange="updatePartnerPaidInline(${idx}, this.value)" class="w-20 p-1.5 border border-blue-200 rounded-lg text-center font-black text-blue-700 bg-blue-50/40"><span class="text-[10px] font-bold text-blue-700">ج.م</span></div></td>
-                    <td class="p-3.5">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="payoutPartnerShare(${idx})" class="px-3 py-1.5 ${partnerShareNow > 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-500'} rounded-lg font-bold text-[11px]">${partnerShareNow > 0 ? 'صرف نصيبه الآن' : 'تم الصرف ✓'}</button>
-                            <a href="https://wa.me/2${p.phone}?text=${encodeURIComponent('مرحباً شريكنا العزيز ' + p.name + ' في ' + companyProfile.name + '، نصيبك الحالي (' + p.percent + '%) هو: ' + partnerShareNow + ' ج.م')}" target="_blank" class="w-7 h-7 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
-                            <button onclick="openPartnerModal(${idx})" class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deletePartner(${idx})" class="w-7 h-7 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center" title="حذف الشريك"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </td>
+                    <td class="p-3.5"><div class="flex items-center justify-center gap-1.5">
+                        <button onclick="payoutPartnerShare(${idx})" class="px-3 py-1.5 ${partnerShareNow > 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-500'} rounded-lg font-bold text-[11px]">${partnerShareNow > 0 ? 'صرف نصيبه الآن' : 'تم الصرف ✓'}</button>
+                        <a href="${waLink}" target="_blank" class="w-7 h-7 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                        <button onclick="openPartnerModal(${idx})" class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deletePartner(${idx})" class="w-7 h-7 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center" title="حذف الشريك"><i class="fa-solid fa-trash"></i></button>
+                    </div></td>
                 </tr>`;
             }).join('');
             updateSelectedPartnersCount();
         }
-
-        function toggleSelectAllPartners(checked) { document.querySelectorAll('.partner-row-cb').forEach(cb => cb.checked = checked); updateSelectedPartnersCount(); }
+        function toggleSelectAllPartners(c) { document.querySelectorAll('.partner-row-cb').forEach(cb => cb.checked = c); updateSelectedPartnersCount(); }
         function updateSelectedPartnersCount() { const el = document.getElementById('selected-partners-count'); if (el) el.innerText = document.querySelectorAll('.partner-row-cb:checked').length + ' محدد'; }
         function bulkDeleteSelectedPartners() {
             const cbs = document.querySelectorAll('.partner-row-cb:checked');
@@ -1702,7 +1615,7 @@
             document.getElementById('select-all-partners').checked = false;
             renderAll(); pushToCoreDB();
         }
-        function updatePartnerPaidInline(idx, newVal) { partnersData[idx].paidTotal = Math.max(0, parseFloat(newVal) || 0); renderAll(); pushToCoreDB(); }
+        function updatePartnerPaidInline(idx, val) { partnersData[idx].paidTotal = Math.max(0, parseFloat(val) || 0); renderAll(); pushToCoreDB(); }
         function openPartnerModal(editIdx = -1) {
             document.getElementById('prt-edit-idx').value = editIdx;
             if (editIdx > -1 && partnersData[editIdx]) {
@@ -1716,40 +1629,34 @@
         function savePartnerModal() {
             const editIdx = parseInt(document.getElementById('prt-edit-idx').value), name = String(document.getElementById('prt-name').value || '').trim(), roleTitle = String(document.getElementById('prt-role').value || '').trim() || 'شريك بنسبة في الأرباح', phone = String(document.getElementById('prt-phone').value || '').trim() || '01000000000', percent = parseFloat(document.getElementById('prt-percent').value) || 0, user = String(document.getElementById('prt-user').value || '').trim() || ('partner' + (partnersData.length + 1)), pass = String(document.getElementById('prt-pass').value || '').trim() || '123456', paidTotal = Math.max(0, parseFloat(document.getElementById('prt-paid-total').value) || 0);
             if (!name) return alert('يرجى إدخال اسم الشريك');
-            if (percent <= 0 || percent > 100) return alert('يرجى إدخال نسبة شراكة صحيحة بين 0.5% و 100%');
+            if (percent <= 0 || percent > 100) return alert('يرجى إدخال نسبة صحيحة بين 0.5% و 100%');
             const otherPct = partnersData.reduce((s, p, i) => i === editIdx ? s : s + (parseFloat(p.percent) || 0), 0);
-            if (otherPct + percent > 100) return alert(`⚠️ لا يمكن تخطي 100%! المتاح كحد أقصى: (${100 - otherPct}%)`);
+            if (otherPct + percent > 100) return alert(`⚠️ لا يمكن تخطي 100%! المتاح: (${100 - otherPct}%)`);
             if (editIdx > -1 && partnersData[editIdx]) Object.assign(partnersData[editIdx], { name, roleTitle, phone, percent, user, pass, paidTotal });
             else partnersData.push({ id: 'PRT-0' + (partnersData.length + 1), name, roleTitle, phone, percent, user, pass, paidTotal });
             renderAll(); closeModal('modal-partner'); pushToCoreDB();
         }
-        function updatePartnerPercentInline(idx, newVal) {
-            const pct = parseFloat(newVal) || 0;
-            const otherPct = partnersData.reduce((s, p, i) => i === idx ? s : s + (parseFloat(p.percent) || 0), 0);
+        function updatePartnerPercentInline(idx, val) {
+            const pct = parseFloat(val) || 0, otherPct = partnersData.reduce((s, p, i) => i === idx ? s : s + (parseFloat(p.percent) || 0), 0);
             if (pct <= 0 || otherPct + pct > 100) { alert(`⚠️ مجموع النسب لا يتجاوز 100% (المتاح: ${100 - otherPct}%)`); renderPartners(); return; }
             partnersData[idx].percent = pct; renderAll(); pushToCoreDB();
         }
         function payoutPartnerShare(idx) {
-            const p = partnersData[idx];
-            if (!p) return;
+            const p = partnersData[idx]; if (!p) return;
             const finStats = getOperatingFinancials(), pct = parseFloat(p.percent) || 0, totalEntitled = Math.round((finStats.totalOperatingProfit * pct) / 100), alreadyPaid = parseFloat(p.paidTotal) || 0, shareNow = Math.max(0, totalEntitled - alreadyPaid);
             if (shareNow <= 0) return alert(`✅ تم صرف كامل نصيب الشريك (${p.name}) الحالي بالفعل! رصيده المتاح: 0 ج.م.`);
             const inputVal = prompt(`نصيب الشريك (${p.name} - ${pct}%) المتاح للصرف الآن (${shareNow} ج.م).\nاكتب المبلغ المراد صرفه:`, shareNow);
             if (inputVal === null) return;
             const confirmAmt = parseFloat(inputVal) || 0;
             if (confirmAmt <= 0 || confirmAmt > shareNow) return alert(`يرجى إدخال مبلغ لا يتجاوز (${shareNow} ج.م).`);
-            p.paidTotal = alreadyPaid + confirmAmt;
-            withdrawnProfitsTotal += confirmAmt;
+            p.paidTotal = alreadyPaid + confirmAmt; withdrawnProfitsTotal += confirmAmt;
             treasuryLogs.unshift({ text: `توزيع وصرف حصة الشريك (${p.name} - ${pct}%)`, amount: confirmAmt, type: 'profit', time: getFormattedNow() });
             renderAll(); pushToCoreDB(); pushToFinDB();
         }
-        function deletePartner(idx) {
-            if (!confirm(`هل أنت متأكد من حذف حساب الشريك (${partnersData[idx].name}) نهائياً؟`)) return;
-            partnersData.splice(idx, 1); renderAll(); pushToCoreDB();
-        }
+        function deletePartner(idx) { if (!confirm(`هل أنت متأكد من حذف حساب الشريك (${partnersData[idx].name}) نهائياً؟`)) return; partnersData.splice(idx, 1); renderAll(); pushToCoreDB(); }
 
         // =========================================================================
-        // 2. التجار (تحديد + حذف جماعي وفردي + فواتير التوريد PDF)
+        // 2. التجار
         // =========================================================================
         function calcMerchantBalance(storeName) {
             return ordersData.filter(o => isSameMerchantStore(o.merchant, storeName) && !o.settledMerchant && ['تم التسليم', 'تم التسليم جزئي', 'مرتجع وتم دفع الشحن', 'مرتجع ولم يدفع الشحن'].includes(o.status)).reduce((sum, o) => sum + calcOrderFinancials(o).netMerchant, 0);
@@ -1761,12 +1668,11 @@
                 tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400 font-bold">لا يوجد تجار مسجلين حالياً — اضغط "+ إضافة تاجر جديد"</td></tr>`;
                 document.getElementById('overview-merchants-list').innerHTML = `<div class="p-4 text-center text-slate-400 font-bold">لا يوجد تجار مسجلين</div>`;
                 document.getElementById('badge-merchants').innerText = 0;
-                updateSelectedMerchantsCount();
-                return;
+                updateSelectedMerchantsCount(); return;
             }
-
             tbody.innerHTML = merchantsData.map((m, idx) => {
                 const merOrdersCount = ordersData.filter(o => isSameMerchantStore(o.merchant, m.store)).length, balance = calcMerchantBalance(m.store);
+                const waLink = buildWhatsAppLink(m.phone, `مرحباً ${m.owner || m.store}، معك إدارة ${companyProfile.name}`);
                 return `<tr class="hover:bg-slate-50">
                     <td class="p-3.5 text-center"><input type="checkbox" class="merchant-row-cb w-4 h-4 rounded accent-red-600 cursor-pointer" data-idx="${idx}" onchange="updateSelectedMerchantsCount()"></td>
                     <td class="p-3.5 font-black text-purple-700">#${m.code}</td>
@@ -1776,29 +1682,21 @@
                     <td class="p-3.5 font-black">${merOrdersCount} أوردر</td>
                     <td class="p-3.5"><div class="flex items-center gap-1">${getSourceBadgeHTML('E-Gateway')}${m.shopify ? getSourceBadgeHTML('Shopify') : ''}</div></td>
                     <td class="p-3.5 font-black text-base ${balance >= 0 ? 'text-emerald-700' : 'text-rose-600'}">${balance.toLocaleString()} ج.م</td>
-                    <td class="p-3.5">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="openMerchantSheetModal('${m.store}')" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg font-bold text-[11px]">أوردراته وفاتورة PDF</button>
-                            <a href="https://wa.me/2${m.phone}" target="_blank" class="w-7 h-7 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
-                            <button onclick="openMerchantModal(${idx})" class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteMerchant(${idx})" class="w-7 h-7 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center" title="حذف حساب التاجر"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </td>
+                    <td class="p-3.5"><div class="flex items-center justify-center gap-1.5">
+                        <button onclick="openMerchantSheetModal('${m.store}')" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg font-bold text-[11px]">أوردراته وفاتورة PDF</button>
+                        <a href="${waLink}" target="_blank" class="w-7 h-7 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                        <button onclick="openMerchantModal(${idx})" class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteMerchant(${idx})" class="w-7 h-7 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center" title="حذف حساب التاجر"><i class="fa-solid fa-trash"></i></button>
+                    </div></td>
                 </tr>`;
             }).join('');
-
             document.getElementById('overview-merchants-list').innerHTML = merchantsData.map(m => `<div class="p-3 rounded-xl bg-slate-50 border flex items-center justify-between"><div><button onclick="openMerchantSheetModal('${m.store}')" class="font-extrabold text-slate-900 underline">${m.store}</button><div class="text-[10px] text-slate-400">خصم: ${m.discount} ج.م</div></div><div class="text-left"><div class="font-black text-emerald-600 text-sm">${calcMerchantBalance(m.store).toLocaleString()} ج.م</div><button onclick="openMerchantSheetModal('${m.store}')" class="text-[10px] text-brand font-bold underline">الفاتورة</button></div></div>`).join('');
             document.getElementById('badge-merchants').innerText = merchantsData.length;
             updateSelectedMerchantsCount();
         }
-
-        function toggleSelectAllMerchants(checked) { document.querySelectorAll('.merchant-row-cb').forEach(cb => cb.checked = checked); updateSelectedMerchantsCount(); }
+        function toggleSelectAllMerchants(c) { document.querySelectorAll('.merchant-row-cb').forEach(cb => cb.checked = c); updateSelectedMerchantsCount(); }
         function updateSelectedMerchantsCount() { const el = document.getElementById('selected-merchants-count'); if (el) el.innerText = document.querySelectorAll('.merchant-row-cb:checked').length + ' تاجر محدد'; }
-        function deleteMerchant(idx) {
-            if (!confirm(`هل أنت متأكد من حذف حساب التاجر (${merchantsData[idx].store}) نهائياً من الشيت؟`)) return;
-            merchantsData.splice(idx, 1);
-            renderAll(); pushToCoreDB();
-        }
+        function deleteMerchant(idx) { if (!confirm(`هل أنت متأكد من حذف حساب التاجر (${merchantsData[idx].store}) نهائياً من الشيت؟`)) return; merchantsData.splice(idx, 1); renderAll(); pushToCoreDB(); }
         function bulkDeleteSelectedMerchants() {
             const cbs = document.querySelectorAll('.merchant-row-cb:checked');
             if (cbs.length === 0) return alert('حدد تاجراً واحداً على الأقل للحذف');
@@ -1807,7 +1705,6 @@
             document.getElementById('select-all-merchants').checked = false;
             renderAll(); pushToCoreDB();
         }
-
         function openMerchantSheetModal(storeName) {
             activeMerchantSheetStore = storeName;
             const m = merchantsData.find(x => x.store === storeName) || { store: storeName, code: 'MER', phone: '' };
@@ -1820,7 +1717,7 @@
             }).join('');
             recalcMerchantSheetSummary(); openModal('modal-merchant-sheet');
         }
-        function toggleAllMerchantOrders(checked) { document.querySelectorAll('.ms-order-cb:not(:disabled)').forEach(cb => cb.checked = checked); recalcMerchantSheetSummary(); }
+        function toggleAllMerchantOrders(c) { document.querySelectorAll('.ms-order-cb:not(:disabled)').forEach(cb => cb.checked = c); recalcMerchantSheetSummary(); }
         function recalcMerchantSheetSummary() {
             const cbs = document.querySelectorAll('.ms-order-cb:checked');
             let totalPaid = 0, totalFees = 0, returnsCount = 0, netDue = 0;
@@ -1843,22 +1740,21 @@
         }
 
         // =========================================================================
-        // 3. المناديب (تحديد + حذف جماعي وفردي + تقفيل العهدة)
+        // 3. المناديب
         // =========================================================================
         function renderCouriers() {
             const grid = document.getElementById('couriers-grid');
             if (couriersData.length === 0) {
                 grid.innerHTML = `<div class="md:col-span-3 bg-white p-8 rounded-2xl border text-center text-slate-400 font-bold">لا يوجد مناديب مسجلين حالياً — اضغط "+ إنشاء أكونت مندوب"</div>`;
                 document.getElementById('badge-couriers').innerText = 0;
-                updateSelectedCouriersCount();
-                return;
+                updateSelectedCouriersCount(); return;
             }
-
             grid.innerHTML = couriersData.map((c, idx) => {
                 const activeOrders = ordersData.filter(o => o.courier === c.name && !o.settledCourier);
                 const cash = activeOrders.reduce((s, o) => s + (parseFloat(o.paid) || 0), 0);
                 const comm = activeOrders.filter(o => String(o.status).includes('تم التسليم') || String(o.status).includes('مرتجع')).reduce((s, o) => s + (parseFloat(o.courierComm) || 0), 0);
                 const returnsCount = activeOrders.filter(o => String(o.status).includes('مرتجع')).length;
+                const waLink = buildWhatsAppLink(c.phone, `مرحباً ${c.name}، معك إدارة ${companyProfile.name}`);
                 return `<div class="bg-white p-5 rounded-2xl border shadow-sm space-y-3">
                     <div class="flex justify-between items-start gap-2">
                         <div class="flex items-start gap-2.5">
@@ -1871,8 +1767,9 @@
                         </div>
                         <div class="flex items-center gap-1 flex-shrink-0">
                             <span class="px-2 py-1 rounded-lg bg-cyan-50 text-cyan-800 font-bold text-[10px]">${activeOrders.length} أوردر</span>
+                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
                             <button onclick="openCourierModal(${idx})" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteCourier(${idx})" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center" title="حذف أكونت المندوب"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteCourier(${idx})" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center" title="حذف"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-3 rounded-xl border">
@@ -1887,14 +1784,9 @@
             document.getElementById('badge-couriers').innerText = couriersData.length;
             updateSelectedCouriersCount();
         }
-
-        function toggleSelectAllCouriers(checked) { document.querySelectorAll('.courier-row-cb').forEach(cb => cb.checked = checked); updateSelectedCouriersCount(); }
+        function toggleSelectAllCouriers(c) { document.querySelectorAll('.courier-row-cb').forEach(cb => cb.checked = c); updateSelectedCouriersCount(); }
         function updateSelectedCouriersCount() { const el = document.getElementById('selected-couriers-count'); if (el) el.innerText = document.querySelectorAll('.courier-row-cb:checked').length + ' مندوب محدد'; }
-        function deleteCourier(idx) {
-            if (!confirm(`هل أنت متأكد من حذف حساب المندوب (${couriersData[idx].name}) نهائياً من الشيت؟`)) return;
-            couriersData.splice(idx, 1);
-            renderAll(); pushToCoreDB();
-        }
+        function deleteCourier(idx) { if (!confirm(`هل أنت متأكد من حذف حساب المندوب (${couriersData[idx].name}) نهائياً من الشيت؟`)) return; couriersData.splice(idx, 1); renderAll(); pushToCoreDB(); }
         function bulkDeleteSelectedCouriers() {
             const cbs = document.querySelectorAll('.courier-row-cb:checked');
             if (cbs.length === 0) return alert('حدد مندوباً واحداً على الأقل للحذف');
@@ -1903,7 +1795,6 @@
             document.getElementById('select-all-couriers').checked = false;
             renderAll(); pushToCoreDB();
         }
-
         function openCourierDetailsModal(courierName) {
             activeCourierDetailsName = courierName;
             document.getElementById('cd-title').innerText = `تفاصيل عهدة وأوردرات المندوب: ${courierName}`;
@@ -1914,7 +1805,7 @@
             }).join('');
             recalcCourierModalSummary(); openModal('modal-courier-details');
         }
-        function toggleAllCourierOrders(checked) { document.querySelectorAll('.cd-order-cb').forEach(cb => cb.checked = checked); recalcCourierModalSummary(); }
+        function toggleAllCourierOrders(c) { document.querySelectorAll('.cd-order-cb').forEach(cb => cb.checked = c); recalcCourierModalSummary(); }
         function recalcCourierModalSummary() {
             const cbs = document.querySelectorAll('.cd-order-cb:checked');
             let cash = 0, comm = 0;
@@ -1938,17 +1829,8 @@
         // 4. الشحنات والطباعة وباقي الأقسام
         // =========================================================================
         function renderAll() {
-            refreshAllBrandVisuals();
-            populateDropdowns();
-            renderOrders();
-            renderMerchants();
-            renderCouriers();
-            renderWarehouse();
-            renderZones();
-            renderTreasuryAndKPIs();
-            renderPartners();
-            renderNDR();
-            renderExpenses();
+            refreshAllBrandVisuals(); populateDropdowns(); renderOrders(); renderMerchants(); renderCouriers();
+            renderWarehouse(); renderZones(); renderTreasuryAndKPIs(); renderPartners(); renderNDR(); renderExpenses();
         }
 
         function renderOrders() {
@@ -1958,8 +1840,7 @@
 
             const filtered = ordersData.filter(o =>
                 (String(o.awb).toLowerCase().includes(search) || String(o.merchant).toLowerCase().includes(search) || String(o.recipient).toLowerCase().includes(search) || String(o.phone).includes(search) || String(o.gov).toLowerCase().includes(search)) &&
-                (statusFilter === 'ALL' || o.status === statusFilter) &&
-                (sourceFilter === 'ALL' || o.source === sourceFilter)
+                (statusFilter === 'ALL' || o.status === statusFilter) && (sourceFilter === 'ALL' || o.source === sourceFilter)
             );
 
             document.getElementById('total-orders-header-count').innerText = ordersData.length;
@@ -1969,10 +1850,9 @@
             const overviewTbody = document.getElementById('overview-orders-tbody');
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="16" class="p-6 text-center text-slate-400 font-bold">لا توجد شحنات مسجلة حالياً — جاهز لاستقبال شحنات JET</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="16" class="p-6 text-center text-slate-400 font-bold">لا توجد شحنات مسجلة حالياً — جاهز لاستقبال شحنات ${companyProfile.name}</td></tr>`;
                 if (ordersData.length === 0) overviewTbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">لا توجد شحنات مسجلة حالياً</td></tr>`;
-                updateSelectedOrdersCount();
-                return;
+                updateSelectedOrdersCount(); return;
             }
 
             tbody.innerHTML = filtered.map(o => {
@@ -1980,6 +1860,7 @@
                 const statusColor = String(o.status).includes('تم التسليم') ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : String(o.status).includes('مرتجع') || o.status === 'تم الإلغاء' ? 'bg-rose-100 text-rose-800 border-rose-300' : o.status === 'تم الشحن مع المندوب' ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-blue-50 text-blue-800 border-blue-200';
                 const courierOptions = [`<option value="بدون مندوب" ${o.courier === 'بدون مندوب' ? 'selected' : ''}>-- بدون مندوب --</option>`].concat(couriersData.map(c => `<option value="${c.name}" ${c.name === o.courier ? 'selected' : ''}>${c.name}</option>`)).join('');
                 const statusOptions = ALL_STATUSES.map(st => `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`).join('');
+                const waClientLink = buildWhatsAppLink(o.phone, `مرحباً ${o.recipient}، بخصوص أوردر ${o.merchant} بوليصة #${o.awb} عبر ${companyProfile.name}`);
 
                 return `<tr class="hover:bg-slate-50 transition ${o.source === 'E-Gateway' ? 'bg-cyan-50/20' : ''}">
                     <td class="py-2.5 px-2.5 text-center"><input type="checkbox" class="order-row-cb w-4 h-4 rounded accent-red-600 cursor-pointer" data-idx="${realIdx}" onchange="updateSelectedOrdersCount()"></td>
@@ -1997,7 +1878,7 @@
                     <td class="py-2.5 px-2.5"><button onclick="openOrderHistoryModal(${realIdx})" class="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200"><i class="fa-solid fa-clock-rotate-left ml-1"></i>${o.actionAt || o.createdAt || 'بانتظار الإجراء'}</button></td>
                     <td class="py-2.5 px-2.5"><select onchange="assignOrderCourier(${realIdx}, this.value)" class="border rounded-lg px-2 py-1 text-[11px] bg-white font-bold max-w-[115px]">${courierOptions}</select></td>
                     <td class="py-2.5 px-2.5"><select onchange="changeOrderStatus(${realIdx}, this.value)" class="border rounded-lg px-2 py-1 text-[11px] font-bold ${statusColor}">${statusOptions}</select></td>
-                    <td class="py-2.5 px-2.5"><div class="flex items-center justify-center gap-1"><button onclick="openOrderModal(${realIdx})" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="previewAWB(${realIdx})" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center"><i class="fa-solid fa-print"></i></button><a href="https://wa.me/2${o.phone}?text=${encodeURIComponent('مرحباً ' + o.recipient + '، بخصوص أوردر ' + o.merchant + ' بوليصة #' + o.awb + ' عبر ' + companyProfile.name)}" target="_blank" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp text-sm"></i></a></div></td>
+                    <td class="py-2.5 px-2.5"><div class="flex items-center justify-center gap-1"><button onclick="openOrderModal(${realIdx})" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="previewAWB(${realIdx})" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center"><i class="fa-solid fa-print"></i></button><a href="${waClientLink}" target="_blank" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp text-sm"></i></a></div></td>
                 </tr>`;
             }).join('');
 
@@ -2041,7 +1922,7 @@
             document.getElementById('oh-timeline').innerHTML = logs.map(l => `<div class="p-2.5 bg-slate-50 rounded-xl border"><div class="font-extrabold text-slate-900">${l.action}</div><div class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-clock ml-1"></i>${l.time}</div></div>`).join('');
             openModal('modal-order-history');
         }
-        function toggleSelectAllOrders(checked) { document.querySelectorAll('.order-row-cb').forEach(cb => cb.checked = checked); updateSelectedOrdersCount(); }
+        function toggleSelectAllOrders(c) { document.querySelectorAll('.order-row-cb').forEach(cb => cb.checked = c); updateSelectedOrdersCount(); }
         function updateSelectedOrdersCount() { const el = document.getElementById('selected-orders-count'); if (el) el.innerText = document.querySelectorAll('.order-row-cb:checked').length + ' محدد'; }
         function bulkPrintSelectedOrders() {
             const cbs = document.querySelectorAll('.order-row-cb:checked');
@@ -2061,17 +1942,14 @@
             renderAll(); pushToOpsDB(deletedAwbs);
         }
         function applyBulkStatus() {
-            const newSt = document.getElementById('bulk-status-select').value;
-            if (!newSt) return alert('اختر الحالة أولاً');
-            const cbs = document.querySelectorAll('.order-row-cb:checked');
-            if (cbs.length === 0) return alert('حدد أوردراً واحداً على الأقل');
+            const newSt = document.getElementById('bulk-status-select').value; if (!newSt) return alert('اختر الحالة أولاً');
+            const cbs = document.querySelectorAll('.order-row-cb:checked'); if (cbs.length === 0) return alert('حدد أوردراً واحداً على الأقل');
             cbs.forEach(cb => changeOrderStatus(parseInt(cb.dataset.idx), newSt, true));
             renderAll(); pushToOpsDB();
         }
         function applyBulkCourier() {
             const cour = document.getElementById('bulk-courier-select').value;
-            const cbs = document.querySelectorAll('.order-row-cb:checked');
-            if (cbs.length === 0) return alert('حدد أوردراً واحداً على الأقل');
+            const cbs = document.querySelectorAll('.order-row-cb:checked'); if (cbs.length === 0) return alert('حدد أوردراً واحداً على الأقل');
             cbs.forEach(cb => { const i = parseInt(cb.dataset.idx); ordersData[i].courier = cour; ordersData[i].status = 'تم الشحن مع المندوب'; recordOrderTimestamp(ordersData[i], `تم الشحن مع (${cour})`); syncWarehouseStockForOrder(ordersData[i], 'تم الشحن مع المندوب'); });
             renderAll(); pushToOpsDB();
         }
@@ -2079,7 +1957,8 @@
             const o = ordersData[idx]; if (!o) return;
             document.getElementById('ci-awb-merchant').innerText = `#${o.awb} (${o.merchant} - ${o.source})`;
             document.getElementById('ci-name').innerText = o.recipient; document.getElementById('ci-phone').innerText = o.phone;
-            document.getElementById('ci-call-btn').href = `tel:${o.phone}`; document.getElementById('ci-wa-btn').href = `https://wa.me/2${o.phone}`;
+            document.getElementById('ci-call-btn').href = `tel:${o.phone}`;
+            document.getElementById('ci-wa-btn').href = buildWhatsAppLink(o.phone, `مرحباً ${o.recipient}، بخصوص أوردر ${o.merchant} بوليصة #${o.awb} عبر ${companyProfile.name}`);
             document.getElementById('ci-gov').innerText = o.gov; document.getElementById('ci-address').innerText = o.address || 'لا يوجد عنوان تفصيلي';
             document.getElementById('ci-edit-order-btn').onclick = () => { closeModal('modal-customer-info'); openOrderModal(idx); };
             openModal('modal-customer-info');
@@ -2102,10 +1981,8 @@
         }
         function assignOrderCourier(idx, courierName) {
             ordersData[idx].courier = courierName;
-            const cObj = couriersData.find(c => c.name === courierName);
-            if (cObj) ordersData[idx].courierComm = cObj.comm;
-            recordOrderTimestamp(ordersData[idx], `تعيين المندوب (${courierName})`);
-            renderAll(); pushToOpsDB();
+            const cObj = couriersData.find(c => c.name === courierName); if (cObj) ordersData[idx].courierComm = cObj.comm;
+            recordOrderTimestamp(ordersData[idx], `تعيين المندوب (${courierName})`); renderAll(); pushToOpsDB();
         }
         function changeOrderStatus(idx, newStatus, skipPush = false) {
             const o = ordersData[idx];
@@ -2119,8 +1996,7 @@
             else if (newStatus === 'تم التسليم جزئي' && !skipPush) { const part = prompt('المبلغ المدفوع فعلياً:', o.paid || (total / 2)); if (part !== null) o.paid = parseFloat(part) || 0; }
             else if (newStatus === 'مرتجع وتم دفع الشحن') o.paid = parseFloat(o.fee) || 0;
             else if (newStatus === 'مرتجع ولم يدفع الشحن' || newStatus === 'تم الإلغاء') { o.paid = 0; if (newStatus === 'تم الإلغاء') o.fee = 0; }
-            recordOrderTimestamp(o, newStatus);
-            syncWarehouseStockForOrder(o, newStatus);
+            recordOrderTimestamp(o, newStatus); syncWarehouseStockForOrder(o, newStatus);
             if (!skipPush) { renderAll(); pushToOpsDB(); }
         }
 
@@ -2254,7 +2130,7 @@
             document.getElementById('badge-ndr').innerText = ndrs.length;
             document.getElementById('ndr-list').innerHTML = ndrs.length === 0
                 ? `<div class="p-6 text-center text-emerald-600 font-bold">ممتاز! لا توجد شحنات مؤجلة أو مرتجعة حالياً ✓</div>`
-                : ndrs.map(o => `<div class="p-4 rounded-xl border border-rose-200 bg-rose-50/40 flex flex-wrap items-center justify-between gap-3"><div><span class="font-black text-rose-700">#${o.awb}</span> ${getSourceBadgeHTML(o.source)} | <strong>${o.merchant}</strong><p class="text-slate-600 mt-1">المستلم: ${o.recipient} (${o.phone}) | الحالة: <strong>${o.status}</strong> | ${o.actionAt || ''}</p></div><div class="flex gap-2"><a href="https://wa.me/2${o.phone}" target="_blank" class="px-3 py-2 bg-emerald-600 text-white rounded-xl font-bold"><i class="fa-brands fa-whatsapp"></i> واتساب</a><button onclick="changeOrderStatus(${ordersData.indexOf(o)}, 'تم الشحن مع المندوب')" class="px-3 py-2 bg-brand text-white rounded-xl font-bold">إعادة شحن</button></div></div>`).join('');
+                : ndrs.map(o => `<div class="p-4 rounded-xl border border-rose-200 bg-rose-50/40 flex flex-wrap items-center justify-between gap-3"><div><span class="font-black text-rose-700">#${o.awb}</span> ${getSourceBadgeHTML(o.source)} | <strong>${o.merchant}</strong><p class="text-slate-600 mt-1">المستلم: ${o.recipient} (${o.phone}) | الحالة: <strong>${o.status}</strong> | ${o.actionAt || ''}</p></div><div class="flex gap-2"><a href="${buildWhatsAppLink(o.phone, 'مرحباً ' + o.recipient + '، بخصوص شحنتك #' + o.awb)}" target="_blank" class="px-3 py-2 bg-emerald-600 text-white rounded-xl font-bold"><i class="fa-brands fa-whatsapp"></i> واتساب</a><button onclick="changeOrderStatus(${ordersData.indexOf(o)}, 'تم الشحن مع المندوب')" class="px-3 py-2 bg-brand text-white rounded-xl font-bold">إعادة شحن</button></div></div>`).join('');
         }
 
         // =========================================================================
@@ -2265,12 +2141,10 @@
             if (sel) { sel.value = platformKey; updateWebhookUrl(); }
         }
         function updateWebhookUrl() {
-            const merSel = document.getElementById('webhook-merchant-select');
-            const platSel = document.getElementById('webhook-platform-select');
-            const merCode = merSel?.value || 'MER-101';
+            const merCode = document.getElementById('webhook-merchant-select')?.value || 'MER-101';
             const merObj = merchantsData.find(m => m.code === merCode);
-            const storeName = merObj ? merObj.store : 'JET';
-            const platform = platSel?.value || 'egateway';
+            const storeName = merObj ? merObj.store : companyProfile.name;
+            const platform = document.getElementById('webhook-platform-select')?.value || 'egateway';
 
             const el = document.getElementById('generated-webhook-url');
             if (el) el.innerText = `${PRIME_CLOUD_URLS.OPS_DB}?merchant=${encodeURIComponent(merCode)}&store=${encodeURIComponent(storeName)}&platform=${platform}`;
@@ -2286,73 +2160,121 @@
                 guideBox.innerHTML = guides[platform] || guides.egateway;
             }
         }
-        function copyWebhookUrl() {
-            navigator.clipboard.writeText(document.getElementById('generated-webhook-url').innerText);
-            alert('✅ تم نسخ رابط الربط الفعلي بنجاح!');
-        }
+        function copyWebhookUrl() { navigator.clipboard.writeText(document.getElementById('generated-webhook-url').innerText); alert('✅ تم نسخ رابط الربط الفعلي بنجاح!'); }
 
         // =========================================================================
-        // 6. ملف الشركة الرسمي، رقم الواتساب، اللوجو والألوان
+        // 6. ملف الشركة الرسمي + الحفظ الفعلي الحقيقي في Google Sheets (1_Core_DB)
         // =========================================================================
-        function saveCompanyProfileSettings() {
+        function showSettingsBanner(type, text) {
+            const b = document.getElementById('settings-save-banner');
+            if (!b) return;
+            b.classList.remove('hidden');
+            b.classList.add('flex');
+            if (type === 'saving') {
+                b.className = 'flex p-3.5 rounded-2xl text-xs font-extrabold items-center justify-between gap-2 bg-amber-50 text-amber-900 border border-amber-300';
+                b.innerHTML = `<span><i class="fa-solid fa-circle-notch fa-spin ml-1.5"></i>${text}</span>`;
+            } else if (type === 'error') {
+                b.className = 'flex p-3.5 rounded-2xl text-xs font-extrabold items-center justify-between gap-2 bg-rose-50 text-rose-800 border border-rose-300';
+                b.innerHTML = `<span><i class="fa-solid fa-triangle-exclamation ml-1.5"></i>${text}</span><button onclick="this.parentElement.classList.add('hidden')" class="font-black">✕</button>`;
+            } else {
+                b.className = 'flex p-3.5 rounded-2xl text-xs font-extrabold items-center justify-between gap-2 bg-emerald-50 text-emerald-800 border border-emerald-300';
+                b.innerHTML = `<span><i class="fa-solid fa-circle-check ml-1.5"></i>${text}</span><button onclick="this.parentElement.classList.add('hidden')" class="font-black">✕</button>`;
+            }
+        }
+
+        async function saveCompanyProfileSettings() {
+            const rawWa = (document.getElementById('input-company-whatsapp')?.value || '').trim();
+            const cleanWa = formatWhatsAppNumber(rawWa);
+            if (!cleanWa) return alert('⚠️ يرجى إدخال رقم واتساب صحيح للشركة (مثال: 01140901494 أو 201140901494)');
+
             companyProfile.name = (document.getElementById('input-company-name')?.value || 'JET').trim();
             companyProfile.tagline = (document.getElementById('input-company-tagline')?.value || '').trim();
-            companyProfile.whatsapp = (document.getElementById('input-company-whatsapp')?.value || '').replace(/\s+/g, '').replace(/^\+/, '').trim();
+            companyProfile.whatsapp = cleanWa;
             companyProfile.phone = (document.getElementById('input-company-phone')?.value || '').trim();
             companyProfile.address = (document.getElementById('input-company-address')?.value || '').trim();
             companyProfile.invoiceFooter = (document.getElementById('input-invoice-footer')?.value || '').trim();
 
+            document.getElementById('input-company-whatsapp').value = cleanWa;
             localStorage.setItem('jet_company_name', companyProfile.name);
             localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
             refreshAllBrandVisuals();
-            alert('✅ تم حفظ بيانات الشركة ورقم الواتساب والإعدادات بنجاح!');
+
+            const btnTop = document.getElementById('btn-save-settings-top');
+            const btnForm = document.getElementById('btn-save-settings-form');
+            [btnTop, btnForm].forEach(btn => { if (btn) { btn.disabled = true; btn.classList.add('opacity-60'); } });
+            if (btnForm) btnForm.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i><span>جاري الحفظ الفعلي في شيت 1_Core_DB...</span>`;
+
+            setSyncStatus('saving', '⏳ جاري حفظ ملف الشركة ورقم الواتساب في Google Sheets...');
+            showSettingsBanner('saving', 'جاري إرسال وحفظ بيانات الشركة ورقم الواتساب فعلياً في شيت 1_Core_DB...');
+
+            try {
+                const res = await fetch(PRIME_CLOUD_URLS.CORE_DB, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'SAVE_SETTINGS', settings: companyProfile })
+                });
+                const result = await res.json();
+                if (!result || result.status !== 'success') {
+                    throw new Error(result?.message || 'الشيت لم يقبل أمر SAVE_SETTINGS بعد — يرجى تحديث كود Apps Script لـ 1_Core_DB');
+                }
+                setSyncStatus('ok', `✅ تم حفظ بيانات الشركة والواتساب (${cleanWa}) في الشيت ✓`);
+                showSettingsBanner('ok', `تم الحفظ الفعلي بنجاح في Google Sheets (1_Core_DB) — رقم الواتساب المعتمد: ${cleanWa} ✓`);
+            } catch (err) {
+                setSyncStatus('error', '❌ لم يُحفظ في الشيت! حدّث كود 1_Core_DB');
+                showSettingsBanner('error', `تعذر الحفظ في Google Sheets: ${err.message}`);
+            } finally {
+                [btnTop, btnForm].forEach(btn => { if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); } });
+                if (btnForm) btnForm.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>حفظ بيانات الشركة ورقم الواتساب في الشيت الآن</span>`;
+            }
         }
 
-        function updateBrandName(val) {
-            companyProfile.name = val || 'JET';
-            localStorage.setItem('jet_company_name', companyProfile.name);
-            localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
-            refreshAllBrandVisuals();
+        function testCompanyWhatsAppNow() {
+            const rawWa = (document.getElementById('input-company-whatsapp')?.value || companyProfile.whatsapp || '').trim();
+            const cleanWa = formatWhatsAppNumber(rawWa);
+            if (!cleanWa) return alert('اكتب رقم الواتساب في الخانة أولاً للتجربة');
+            window.open(buildWhatsAppLink(cleanWa, `رسالة تجربة من لوحة إدارة ${companyProfile.name} — الرقم يعمل بشكل صحيح ✓`), '_blank');
         }
-        function updateBrandTagline(val) {
-            companyProfile.tagline = val || '';
-            localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
-            refreshAllBrandVisuals();
-        }
-        function setLogoIcon(iconClass) {
-            companyProfile.logoMode = 'icon';
-            companyProfile.logoIcon = iconClass;
-            localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
-            refreshAllBrandVisuals();
-        }
-        function resetToDefaultJetLogo() {
-            companyProfile.logoMode = 'svg';
-            localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
-            refreshAllBrandVisuals();
-        }
+
+        function previewBrandName(val) { companyProfile.name = val || 'JET'; refreshAllBrandVisuals(); }
+        function previewBrandTagline(val) { companyProfile.tagline = val || ''; refreshAllBrandVisuals(); }
+        function setLogoIcon(iconClass) { companyProfile.logoMode = 'icon'; companyProfile.logoIcon = iconClass; localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile)); refreshAllBrandVisuals(); saveCompanyProfileSettings(); }
+        function resetToDefaultJetLogo() { companyProfile.logoMode = 'svg'; companyProfile.logoDataUrl = ''; localStorage.removeItem('jet_permanent_logo_base64'); localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile)); refreshAllBrandVisuals(); saveCompanyProfileSettings(); }
+
         function uploadLogoFile(event) {
             const f = event.target.files[0]; if (!f) return;
-            const r = new FileReader();
-            r.onload = e => {
-                localStorage.setItem('jet_permanent_logo_base64', e.target.result);
-                companyProfile.logoMode = 'image';
-                localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
-                refreshAllBrandVisuals();
-                alert('✅ تم حفظ وتثبيت لوجو الشركة الجديد بنجاح!');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height, maxW = 260;
+                    if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const compressed = canvas.toDataURL('image/png', 0.85);
+                    companyProfile.logoMode = 'image';
+                    companyProfile.logoDataUrl = compressed;
+                    localStorage.setItem('jet_permanent_logo_base64', compressed);
+                    localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
+                    refreshAllBrandVisuals();
+                    saveCompanyProfileSettings();
+                };
+                img.src = e.target.result;
             };
-            r.readAsDataURL(f);
+            reader.readAsDataURL(f);
         }
+
         function setThemeColor(primary, hover, light) {
-            companyProfile.primaryColor = primary;
-            companyProfile.hoverColor = hover;
-            companyProfile.lightColor = light;
+            companyProfile.primaryColor = primary; companyProfile.hoverColor = hover; companyProfile.lightColor = light;
             localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
             refreshAllBrandVisuals();
+            saveCompanyProfileSettings();
         }
         function setSidebarColor(bg) {
             companyProfile.sidebarBg = bg;
             localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
             refreshAllBrandVisuals();
+            saveCompanyProfileSettings();
         }
 
         // =========================================================================
@@ -2477,16 +2399,10 @@
         }
 
         function populateDropdowns() {
-            const merOpts = merchantsData.length > 0
-                ? merchantsData.map(m => `<option value="${m.store}">${m.store} (#${m.code})</option>`).join('')
-                : `<option value="عميل مباشر">عميل مباشر (بدون متجر)</option>`;
+            const merOpts = merchantsData.length > 0 ? merchantsData.map(m => `<option value="${m.store}">${m.store} (#${m.code})</option>`).join('') : `<option value="عميل مباشر">عميل مباشر (بدون متجر)</option>`;
             if (document.getElementById('ord-merchant')) document.getElementById('ord-merchant').innerHTML = merOpts;
             if (document.getElementById('stk-merchant')) document.getElementById('stk-merchant').innerHTML = merOpts;
-            if (document.getElementById('webhook-merchant-select')) {
-                document.getElementById('webhook-merchant-select').innerHTML = merchantsData.length > 0
-                    ? merchantsData.map(m => `<option value="${m.code}">${m.store} (${m.code})</option>`).join('')
-                    : `<option value="MER-101">أضف تاجراً أولاً</option>`;
-            }
+            if (document.getElementById('webhook-merchant-select')) document.getElementById('webhook-merchant-select').innerHTML = merchantsData.length > 0 ? merchantsData.map(m => `<option value="${m.code}">${m.store} (${m.code})</option>`).join('') : `<option value="MER-101">أضف تاجراً أولاً</option>`;
             if (document.getElementById('ord-gov')) document.getElementById('ord-gov').innerHTML = zonesData.map(z => `<option value="${z.name}" data-fee="${z.fee}" data-comm="${z.comm}">${z.name} (أساسي ${z.fee} ج.م)</option>`).join('');
             if (document.getElementById('calc-zone-select')) document.getElementById('calc-zone-select').innerHTML = zonesData.map((z, i) => `<option value="${i}">${z.name} (${z.fee} ج.م)</option>`).join('');
             const courOpts = `<option value="بدون مندوب">-- بدون مندوب (أوردر جديد) --</option>` + couriersData.map(c => `<option value="${c.name}">${c.name} (${c.zone})</option>`).join('');
@@ -2514,8 +2430,7 @@
         }
         function switchTab(tabId, clickedBtn, skipHistory = false) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById(tabId);
-            if (target) target.classList.add('active');
+            const target = document.getElementById(tabId); if (target) target.classList.add('active');
             const targetSideBtn = clickedBtn || document.getElementById('nav-btn-' + tabId.replace('tab-', ''));
             if (targetSideBtn) {
                 document.querySelectorAll('#main-sidebar .nav-btn').forEach(btn => btn.classList.remove('bg-brand', 'text-white'));
