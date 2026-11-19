@@ -98,7 +98,7 @@
         <div class="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden mt-5 border border-slate-700">
             <div id="jet-loader-bar" class="h-full bg-gradient-to-l from-red-500 to-slate-500 transition-all duration-300" style="width: 30%"></div>
         </div>
-        <p class="text-[11px] font-bold text-slate-300 mt-3">جاري تحميل شحناتك وحساباتك من السحابة...</p>
+        <p class="text-[11px] font-bold text-slate-300 mt-3">جاري تحميل شحناتك وإعدادات الشركة من Google Sheets...</p>
     </div>
 
     <!-- مؤشر المزامنة -->
@@ -608,10 +608,11 @@
                             </div>
                         </div>
 
-                        <!-- بطاقة التواصل المباشر مع شركة الشحن (مربوطة بملف الشركة في admin.html) -->
+                        <!-- بطاقة التواصل المباشر مع شركة الشحن (تسحب البيانات الحية من شيت 1_Core_DB) -->
                         <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm space-y-2.5 text-xs">
                             <h4 class="font-black text-amber-400 text-sm"><i class="fa-solid fa-headset ml-1"></i> خدمة عملاء <span class="brand-name-span">JET</span></h4>
                             <div class="flex justify-between text-slate-300"><span>هاتف الفرع:</span><strong id="co-support-phone" class="font-mono text-white"></strong></div>
+                            <div class="flex justify-between text-slate-300"><span>واتساب الإدارة:</span><strong id="co-support-wa" class="font-mono text-emerald-400"></strong></div>
                             <div class="flex justify-between text-slate-300"><span>العنوان:</span><strong id="co-support-address" class="text-white"></strong></div>
                             <button onclick="contactAdminSupport()" class="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black flex items-center justify-center gap-2 transition">
                                 <i class="fa-brands fa-whatsapp text-base"></i><span>مراسلة الإدارة عبر واتساب</span>
@@ -696,7 +697,7 @@
             </div>
         </div>
 
-        <!-- 2. نافذة معاينة وطباعة البوليصة (مفردة أو جماعية + تبديل الشحن المجاني) -->
+        <!-- 2. نافذة معاينة وطباعة البوليصة -->
         <div id="modal-awb" onclick="handleBackdropClick(event, 'modal-awb')" class="modal-backdrop fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-3 sm:p-4 z-50">
             <div class="modal-card bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden text-xs">
                 <div class="no-print p-4 border-b bg-slate-900 text-white flex justify-between items-center">
@@ -763,7 +764,7 @@
             </div>
         </div>
 
-        <!-- 6. نافذة طلب توريد الرصيد (تُرسل تلقائياً على رقم واتساب الشركة المسجل في admin.html) -->
+        <!-- 6. نافذة طلب توريد الرصيد -->
         <div id="modal-payout-request" onclick="handleBackdropClick(event, 'modal-payout-request')" class="modal-backdrop fixed inset-0 bg-slate-900/75 hidden items-center justify-center p-4 z-50">
             <div class="modal-card bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden text-xs">
                 <div class="p-4 border-b bg-slate-900 text-white flex justify-between items-center">
@@ -809,12 +810,28 @@
 
         const ALL_STATUSES = ["جديد", "قيد التأكيد", "جاهز للشحن", "تم الشحن مع المندوب", "تم التسليم", "تم التسليم جزئي", "مؤجل", "تم الإلغاء", "مرتجع وتم دفع الشحن", "مرتجع ولم يدفع الشحن"];
 
-        // قراءة ملف الشركة والإعدادات البصرية المتزامنة مع لوحة الأدمن
-        const companyProfile = JSON.parse(localStorage.getItem('jet_company_profile') || 'null') || {
+        // تنسيق ذكي لأي رقم واتساب مصري أو دولي لفتح المحادثة مباشرة بدون تكرار كود الدولة
+        function formatWhatsAppNumber(raw) {
+            let digits = String(raw || '').replace(/\D/g, '');
+            if (!digits) return '';
+            if (digits.startsWith('00')) digits = digits.slice(2);
+            if (digits.startsWith('0') && digits.length === 11) digits = '2' + digits;
+            else if (digits.startsWith('1') && digits.length === 10) digits = '20' + digits;
+            return digits;
+        }
+
+        function buildWhatsAppLink(phone, text = '') {
+            const clean = formatWhatsAppNumber(phone);
+            if (!clean) return 'javascript:alert("لا يوجد رقم واتساب مسجل لهذا الحساب")';
+            return text ? `https://wa.me/${clean}?text=${encodeURIComponent(text)}` : `https://wa.me/${clean}`;
+        }
+
+        // إعدادات الشركة (يتم تحديثها تلقائياً من تبويب إعدادات_الشركة في شيت 1_Core_DB على أي جهاز)
+        let companyProfile = JSON.parse(localStorage.getItem('jet_company_profile') || 'null') || {
             name: localStorage.getItem('jet_company_name') || 'JET',
             tagline: 'جيت للشحن والخدمات اللوجستية',
-            whatsapp: '',
-            phone: '01000000000',
+            whatsapp: '201140901494',
+            phone: '01126389850',
             address: 'القاهرة - جمهورية مصر العربية',
             invoiceFooter: 'شكراً لاختياركم JET Shipping & Logistics — خدمة العملاء متاحة يومياً',
             primaryColor: '#c8102e',
@@ -822,7 +839,8 @@
             lightColor: '#fef2f2',
             sidebarBg: '#0f172a',
             logoMode: 'svg',
-            logoIcon: 'fa-truck-fast'
+            logoIcon: 'fa-truck-fast',
+            logoDataUrl: localStorage.getItem('jet_permanent_logo_base64') || ''
         };
 
         const EXACT_JET_SVG_LOGO = `<svg viewBox="0 0 1000 1000" class="w-full h-full object-contain" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -848,7 +866,7 @@
             <path d="M20 86 C38 76 58 58 82 32 L75 27 L94 22 L89 41 L83 36 C60 63 40 80 20 86 Z" fill="#06b6d4"/>
         </svg>`;
 
-        let currentMerchant = { code: 'MER-101', store: 'تاجر تجريبي', owner: 'عميل JET', phone: '01000000000', user: 'test_mer', discount: 0 };
+        let currentMerchant = { code: 'MER-101', store: 'متجري', owner: 'عميل JET', phone: '01000000000', user: 'merchant', discount: 0 };
         let zonesData = [
             { code: 'ZN-01', name: 'القاهرة', sector: 'القاهرة الكبرى', fee: 50, comm: 20, remoteFee: 15, extraKg: 10, sla: '24 ساعة' },
             { code: 'ZN-02', name: 'الجيزة', sector: 'القاهرة الكبرى', fee: 50, comm: 20, remoteFee: 15, extraKg: 10, sla: '24 ساعة' },
@@ -888,9 +906,10 @@
             if (document.getElementById('preloader-brand-name')) document.getElementById('preloader-brand-name').innerText = bName;
             if (document.getElementById('preloader-tagline')) document.getElementById('preloader-tagline').innerText = companyProfile.tagline || 'بوابة العملاء والتجار';
             if (document.getElementById('co-support-phone')) document.getElementById('co-support-phone').innerText = companyProfile.phone || 'غير مسجل';
+            if (document.getElementById('co-support-wa')) document.getElementById('co-support-wa').innerText = formatWhatsAppNumber(companyProfile.whatsapp) || 'غير مسجل';
             if (document.getElementById('co-support-address')) document.getElementById('co-support-address').innerText = companyProfile.address || 'مصر';
 
-            const savedJetLogo = localStorage.getItem('jet_permanent_logo_base64') || '';
+            const savedJetLogo = companyProfile.logoDataUrl || localStorage.getItem('jet_permanent_logo_base64') || '';
             const savedEgwLogo = localStorage.getItem('swift_egateway_logo') || '';
 
             document.querySelectorAll('.jet-logo-slot').forEach(slot => {
@@ -898,8 +917,6 @@
                     slot.innerHTML = `<img src="${savedJetLogo}" class="w-full h-full object-contain" alt="${bName}">`;
                 } else if (companyProfile.logoMode === 'icon') {
                     slot.innerHTML = `<i class="fa-solid ${companyProfile.logoIcon || 'fa-truck-fast'} text-brand text-xl"></i>`;
-                } else if (savedJetLogo && companyProfile.logoMode !== 'svg') {
-                    slot.innerHTML = `<img src="${savedJetLogo}" class="w-full h-full object-contain" alt="${bName}">`;
                 } else {
                     slot.innerHTML = EXACT_JET_SVG_LOGO;
                 }
@@ -911,13 +928,18 @@
         }
 
         function getCompanyWhatsAppUrl(text) {
-            const cleanWa = String(companyProfile.whatsapp || '').replace(/\D/g, '');
-            return cleanWa ? `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+            const cleanWa = formatWhatsAppNumber(companyProfile.whatsapp);
+            if (!cleanWa) {
+                alert('⚠️ لم يتم تسجيل رقم واتساب الإدارة بعد من لوحة التحكم.');
+                return '';
+            }
+            return `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
         }
 
         function contactAdminSupport(customNote = '') {
             const msg = `مرحباً خدمة عملاء ${companyProfile.name || 'JET'}،\nأنا العميل: *${currentMerchant.store}* (كود #${currentMerchant.code})\n${customNote || 'أحتاج مساعدة بخصوص حسابي وشحناتي.'}`;
-            window.open(getCompanyWhatsAppUrl(msg), '_blank');
+            const url = getCompanyWhatsAppUrl(msg);
+            if (url) window.open(url, '_blank');
         }
 
         function getSourceBadgeHTML(source) {
@@ -1021,7 +1043,6 @@
             return { totalCod, effectiveFee, netMerchant: totalCod - effectiveFee };
         }
 
-        // دالة الدمج الآمن لحفظ أي تعديل للتاجر في شيت التشغيل دون المساس بشحنات التجار الآخرين
         async function safelyMutateOrdersInCloud(mutatorFn, successMsg) {
             setSyncStatus('saving', '⏳ جاري الحفظ الآمن في السحابة...');
             const remoteRes = await fetch(`${JET_CLOUD_URLS.OPS_DB}?t=${Date.now()}`, { cache: 'no-store' }).then(r => r.json()).catch(() => null);
@@ -1045,7 +1066,7 @@
         }
 
         // =========================================================================
-        // جلب بيانات التاجر الحية ومزامنة أوردرات المتاجر
+        // جلب بيانات التاجر الحية + إعدادات الشركة (بما فيها رقم الواتساب) من 1_Core_DB
         // =========================================================================
         async function pullMerchantDataFromSheets(manualRefresh = false) {
             if (manualRefresh) setSyncStatus('saving', '⏳ جاري تحديث شحناتك وحساباتك...');
@@ -1061,6 +1082,14 @@
                 ]);
 
                 if (coreRes && coreRes.status === 'success') {
+                    // سحب إعدادات الشركة ورقم الواتساب الرسمي من شيت 1_Core_DB مباشرة
+                    if (coreRes.settings && typeof coreRes.settings === 'object' && Object.keys(coreRes.settings).length > 0) {
+                        companyProfile = { ...companyProfile, ...coreRes.settings };
+                        if (companyProfile.logoDataUrl) localStorage.setItem('jet_permanent_logo_base64', companyProfile.logoDataUrl);
+                        localStorage.setItem('jet_company_name', companyProfile.name || 'JET');
+                        localStorage.setItem('jet_company_profile', JSON.stringify(companyProfile));
+                    }
+
                     if (Array.isArray(coreRes.merchants) && coreRes.merchants.length > 0) {
                         const matched = coreRes.merchants.find(m =>
                             isSameMerchantStore(m.store, currentMerchant.store) ||
@@ -1175,7 +1204,7 @@
             document.getElementById('sidebar-mer-code').innerText = '#' + currentMerchant.code;
             document.getElementById('sidebar-mer-discount').innerText = currentMerchant.discount > 0 ? `خصم ${currentMerchant.discount} ج.م` : 'السعر الأساسي';
 
-            const avatar = localStorage.getItem('jet_mer_avatar_' + currentMerchant.code) || currentMerchant.avatar || '';
+            const avatar = currentMerchant.avatar || localStorage.getItem('jet_mer_avatar_' + currentMerchant.code) || '';
             ['header-avatar', 'profile-big'].forEach(prefix => {
                 const img = document.getElementById(prefix + '-img'), ico = document.getElementById(prefix + '-icon');
                 if (img && ico) {
@@ -1288,6 +1317,7 @@
                 const itemAn = analyzeOrderItemsSmart(o.items);
                 const statusColor = String(o.status).includes('تم التسليم') ? 'bg-emerald-100 text-emerald-800' : String(o.status).includes('مرتجع') || o.status === 'تم الإلغاء' ? 'bg-rose-100 text-rose-800' : o.status === 'تم الشحن مع المندوب' ? 'bg-amber-100 text-amber-800' : 'bg-blue-50 text-blue-800';
                 const canModify = o.status === 'جديد';
+                const waClientLink = buildWhatsAppLink(o.phone, `مرحباً ${o.recipient}، بخصوص طلبك من ${currentMerchant.store} برقم بوليصة #${o.awb}`);
 
                 return `<tr class="hover:bg-slate-50 transition ${o.source === 'E-Gateway' ? 'bg-cyan-50/20' : ''}">
                     <td class="py-2.5 px-2.5 text-center"><input type="checkbox" class="order-row-cb w-4 h-4 rounded accent-red-600 cursor-pointer" data-idx="${idx}" onchange="updateSelectedCount()"></td>
@@ -1313,7 +1343,7 @@
                         <div class="flex items-center justify-center gap-1">
                             <button onclick="previewSingleAWB(${idx})" title="طباعة البوليصة" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center"><i class="fa-solid fa-print"></i></button>
                             ${canModify ? `<button onclick="openNewOrderModal(${idx})" title="تعديل الشحنة" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteSingleNewOrder('${o.awb}')" title="حذف الشحنة" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>` : ''}
-                            <a href="https://wa.me/2${o.phone}" target="_blank" title="واتساب العميل" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp"></i></a>
+                            <a href="${waClientLink}" target="_blank" title="واتساب العميل" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp"></i></a>
                         </div>
                     </td>
                 </tr>`;
@@ -1520,11 +1550,11 @@
         }
 
         // =========================================================================
-        // الطباعة، النوافذ التفصيلية، وطلب التوريد
+        // الطباعة، النوافذ التفصيلية، وطلب التوريد المباشر على واتساب الإدارة
         // =========================================================================
         function buildInvoiceHTML(o) {
             const fin = calcOrderFinancials(o), showDetails = o.showShipInv !== false, itemAn = analyzeOrderItemsSmart(o.items);
-            const savedLogo = localStorage.getItem('jet_permanent_logo_base64') || '';
+            const savedLogo = companyProfile.logoDataUrl || localStorage.getItem('jet_permanent_logo_base64') || '';
             const logoMarkup = (companyProfile.logoMode === 'image' && savedLogo)
                 ? `<img src="${savedLogo}" class="w-10 h-10 object-contain">`
                 : `<div class="w-10 h-10">${EXACT_JET_SVG_LOGO}</div>`;
@@ -1595,6 +1625,7 @@
 
         function openCustomerModal(idx) {
             const o = myOrders[idx]; if (!o) return;
+            const waLink = buildWhatsAppLink(o.phone, `مرحباً ${o.recipient}، بخصوص طلبك من ${currentMerchant.store} برقم بوليصة #${o.awb}`);
             document.getElementById('customer-modal-body').innerHTML = `
                 <div class="flex justify-between border-b pb-2"><span class="text-slate-400 font-bold">البوليصة والمصدر:</span><strong class="font-mono text-brand">#${o.awb} (${o.source})</strong></div>
                 <div><span class="text-slate-400 font-bold block">المستلم:</span><strong class="text-sm text-slate-900">${o.recipient}</strong></div>
@@ -1603,7 +1634,7 @@
                     <div class="flex gap-1.5">
                         <button onclick="navigator.clipboard.writeText('${o.phone}'); alert('تم النسخ');" class="px-2.5 py-1.5 bg-white border rounded-lg font-bold">نسخ</button>
                         <a href="tel:${o.phone}" class="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg font-bold">اتصال</a>
-                        <a href="https://wa.me/2${o.phone}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg font-bold">واتساب</a>
+                        <a href="${waLink}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg font-bold">واتساب</a>
                     </div>
                 </div>
                 <div><span class="text-slate-400 font-bold block">المحافظة والعنوان:</span><p class="p-3 bg-slate-50 rounded-xl border font-bold mt-1">${o.gov} — ${o.address || 'غير محدد'}</p></div>`;
@@ -1657,23 +1688,37 @@
             const acc = document.getElementById('pay-account').value.trim();
             if (!acc) return alert('يرجى كتابة رقم الحساب أو المحفظة');
             const msg = `مرحباً إدارة ${companyProfile.name || 'JET'}،\nأنا العميل: *${currentMerchant.store}* (كود #${currentMerchant.code})\nأطلب توريد رصيدي الجاهز الحالي: *${bal}*\nطريقة الاستلام: *${method}*\nبيانات التحويل: *${acc}*\nالتاريخ: ${getFormattedNow()}`;
-            closeModal('modal-payout-request');
-            window.open(getCompanyWhatsAppUrl(msg), '_blank');
+            const url = getCompanyWhatsAppUrl(msg);
+            if (url) {
+                closeModal('modal-payout-request');
+                window.open(url, '_blank');
+            }
         }
 
         function handleMerchantAvatarUpload(event) {
             const f = event.target.files[0]; if (!f) return;
-            const r = new FileReader();
-            r.onload = e => {
-                localStorage.setItem('jet_mer_avatar_' + currentMerchant.code, e.target.result);
-                renderAll();
-                fetch(JET_CLOUD_URLS.CORE_DB, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'UPDATE_AVATAR', targetTab: 'Merchants', keyField: 'code', keyValue: currentMerchant.code, avatarDataUrl: e.target.result })
-                }).catch(() => {});
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height, maxW = 220;
+                    if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
+                    currentMerchant.avatar = compressed;
+                    localStorage.setItem('jet_mer_avatar_' + currentMerchant.code, compressed);
+                    renderAll();
+                    fetch(JET_CLOUD_URLS.CORE_DB, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'UPDATE_AVATAR', targetTab: 'Merchants', keyField: 'code', keyValue: currentMerchant.code, avatarDataUrl: compressed })
+                    }).catch(() => {});
+                };
+                img.src = e.target.result;
             };
-            r.readAsDataURL(f);
+            reader.readAsDataURL(f);
         }
 
         function printElement(elemId) {
