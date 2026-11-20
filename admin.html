@@ -15,7 +15,7 @@
             background-color: #f1f5f9;
             min-height: 100dvh;
             height: auto;
-            overflow-x: hidden;
+            overflow-x: clip !important;
             overflow-y: auto;
             overscroll-behavior-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -35,6 +35,31 @@
 
         .egateway-grad { background: linear-gradient(135deg, #06b6d4 0%, #0284c7 50%, #1e3a8a 100%); }
         .egateway-badge { background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(30,58,138,0.15)); color: #0369a1; border: 1px solid rgba(6,182,212,0.45); }
+
+        /* إصلاح السحب يمين وشمال في الجداول والصفحات على الموبايل مع بقاء الريفريش */
+        body > div.flex {
+            width: 100% !important;
+            max-width: 100vw !important;
+            min-width: 0 !important;
+        }
+        main, .tab-pane {
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+        @media (max-width: 1023px) {
+            main {
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+        }
+        .table-responsive-scroll {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-x pan-y !important;
+        }
 
         #prime-cloud-preloader {
             position: fixed; inset: 0; z-index: 99999;
@@ -70,7 +95,6 @@
         .modal-backdrop { overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .modal-card { max-height: 90vh; display: flex; flex-direction: column; margin: auto; }
         .modal-body-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; }
-        .table-responsive-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -665,7 +689,6 @@
                 <div id="settings-save-banner" class="hidden p-3.5 rounded-2xl text-xs font-extrabold items-center justify-between gap-2"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
-                    <!-- القسم الأول: بيانات الشركة ورقم الواتساب الرسمي -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <h3 class="font-black text-sm text-slate-900 border-b pb-2.5"><i class="fa-solid fa-id-card text-brand ml-1"></i> بيانات الشركة ورقم استقبال رسائل الواتساب</h3>
 
@@ -710,7 +733,6 @@
                         </button>
                     </div>
 
-                    <!-- القسم الثاني: اللوجو والألوان والهوية البصرية -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <h3 class="font-black text-sm text-slate-900 border-b pb-2.5"><i class="fa-solid fa-palette text-brand ml-1"></i> استوديو تخصيص اللوجو والألوان والهوية البصرية</h3>
 
@@ -1061,7 +1083,6 @@
 
                 if (coreRes && coreRes.status === 'success') {
                     connected = true;
-                    // جلب إعدادات الشركة ورقم الواتساب من الشيت إذا كانت محفوظة
                     if (coreRes.settings && typeof coreRes.settings === 'object' && Object.keys(coreRes.settings).length > 0) {
                         companyProfile = { ...companyProfile, ...coreRes.settings };
                         if (companyProfile.logoDataUrl) localStorage.setItem('jet_permanent_logo_base64', companyProfile.logoDataUrl);
